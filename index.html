@@ -5,12 +5,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Moodflix - AI Movie Intelligence</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Babel for on-the-fly JSX transpilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <script>
-      // Browser compatibility shim for process.env
-      window.process = { env: { API_KEY: "" } };
-      
+      // Process shim for browser
+      window.process = { 
+        env: { 
+          API_KEY: "" // Will be injected by system
+        } 
+      };
+
       tailwind.config = {
         darkMode: 'class',
         theme: {
@@ -22,14 +34,11 @@
         }
       }
     </script>
+
     <style>
       :root {
         --bg-color: #050505;
         --bg-gradient: radial-gradient(circle at 50% -20%, #301010 0%, #050505 80%);
-      }
-      html.light {
-        --bg-color: #f8fafc;
-        --bg-gradient: radial-gradient(circle at 50% -20%, #fee2e2 0%, #f8fafc 80%);
       }
       body {
         font-family: 'Vazirmatn', sans-serif;
@@ -40,43 +49,20 @@
         margin: 0;
         padding: 0;
         overflow-x: hidden;
+        color: white;
       }
       .glass-card {
         background: rgba(255, 255, 255, 0.03);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
       }
-      .light .glass-card {
-        background: rgba(255, 255, 255, 0.7);
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
-      }
-      .netflix-red {
-        color: #E50914;
-      }
+      .netflix-red { color: #E50914; }
       .netflix-logo {
         font-weight: 900;
         letter-spacing: -2px;
         text-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
       }
-      .gradient-text {
-        background: linear-gradient(135deg, #fff 0%, #888 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .light .gradient-text {
-        background: linear-gradient(135deg, #000 0%, #444 100%);
-        -webkit-background-clip: text;
-      }
-      
-      .layer-badge {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-      }
-
       .animate-fade-in {
         animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
@@ -84,7 +70,14 @@
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
       }
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #050505; }
+      ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #E50914; }
     </style>
+
+    <!-- Import Map for direct ESM usage in browser -->
     <script type="importmap">
 {
   "imports": {
@@ -92,8 +85,8 @@
     "react-dom": "https://esm.sh/react-dom@19.0.0",
     "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
     "@google/genai": "https://esm.sh/@google/genai@1.34.0",
-    "recharts": "https://esm.sh/recharts@2.12.7",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "recharts": "https://esm.sh/recharts@^3.6.0",
     "react/": "https://esm.sh/react@^19.2.3/",
     "http": "https://esm.sh/http@^0.0.1-security",
     "fs": "https://esm.sh/fs@^0.0.1-security",
@@ -105,8 +98,163 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="https://esm.sh/run"></script>
-    <!-- Use text/babel so esm.sh/run transpiles the TSX in the browser -->
-    <script type="text/babel" data-type="module" src="./index.tsx"></script>
+
+    <!-- 
+      We use text/babel with data-type="module" to allow Babel to transpile 
+      JSX while still treating it as an ES Module.
+    -->
+    <script type="text/babel" data-type="module">
+      import React, { useState, useEffect } from 'react';
+      import { createRoot } from 'react-dom/client';
+      import { GoogleGenAI, Type } from "@google/genai";
+
+      // --- TYPES & CONSTANTS ---
+      const PrimaryMood = {
+        SAD: 'sad', CALM: 'calm', LONELY: 'lonely', ANXIOUS: 'anxious',
+        HAPPY: 'happy', ANGRY: 'angry', EMPTY: 'empty', HOPEFUL: 'hopeful',
+        ROMANTIC: 'romantic', BORED: 'bored', TIRED: 'tired', NIHILISTIC: 'nihilistic'
+      };
+
+      const MOOD_COLORS = {
+        sad: '#3b82f6', happy: '#facc15', anxious: '#f97316', angry: '#dc2626',
+        bored: '#92400e', lonely: '#6366f1', romantic: '#ec4899', tired: '#a855f7',
+        hopeful: '#06b6d4', nihilistic: '#475569', calm: '#10b981', empty: '#94a3b8'
+      };
+
+      const MOOD_ICONS = {
+        sad: '😢', happy: '😊', anxious: '😰', angry: '😡',
+        bored: '😑', lonely: '👤', romantic: '💖', tired: '😴',
+        hopeful: '✨', nihilistic: '🕳️', calm: '🧘', empty: '😶'
+      };
+
+      const translations = {
+        fa: {
+          title: "MOODFLIX", subtitle: "آنالیز لایه‌های احساسی سینما",
+          moodPrompt: "لایه اول: احساس اصلی شما؟", intensityPrompt: "لایه دوم: شدت احساس؟",
+          energyPrompt: "لایه سوم: سطح انرژی؟", mentalPrompt: "لایه چهارم: عمق تمرکز؟",
+          discover: "نمایش فرکانس نهایی", analyzing: "در حال آنالیز لایه‌ها...", reset: "تغییر لایه‌ها",
+          moods: {
+            sad: "غمگین", happy: "شاد", anxious: "مضطرب", angry: "عصبانی", bored: "بی‌حوصله",
+            lonely: "تنها", romantic: "عاشقانه", tired: "خسته", hopeful: "امیدوار", nihilistic: "پوچ‌گرا",
+            calm: "آرام", empty: "پوچ"
+          },
+          levels: { low: "ملایم", medium: "متوسط", high: "شدید", very_low: "خیلی کم", deep: "عمیق", light: "سرگرمی" }
+        }
+      };
+
+      // --- APP COMPONENT ---
+      const App = () => {
+        const [step, setStep] = useState(1);
+        const [loading, setLoading] = useState(false);
+        const [pack, setPack] = useState(null);
+        const [selection, setSelection] = useState({
+          primaryMood: null, intensity: null, energy: null, mentalState: null
+        });
+
+        const t = translations.fa;
+        const activeColor = selection.primaryMood ? MOOD_COLORS[selection.primaryMood] : '#E50914';
+
+        useEffect(() => {
+          if (selection.primaryMood) {
+            document.body.style.setProperty('--bg-gradient', `radial-gradient(circle at 50% -20%, ${MOOD_COLORS[selection.primaryMood]}33 0%, #050505 80%)`);
+          }
+        }, [selection.primaryMood]);
+
+        const handleSelect = (key, value) => {
+          setSelection(prev => ({ ...prev, [key]: value }));
+          setStep(s => s + 1);
+        };
+
+        const getRecommendations = async () => {
+          setLoading(true);
+          try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || window.process.env.API_KEY });
+            const prompt = `Suggest 3 movies for mood: ${selection.primaryMood}, intensity: ${selection.intensity}. Return JSON: {quote: string, title: string, movies: [{title, year, genre, desc, why, rating}]}. Language: Persian.`;
+            
+            const response = await ai.models.generateContent({
+              model: 'gemini-3-flash-preview',
+              contents: [{ parts: [{ text: prompt }] }],
+              config: { responseMimeType: "application/json" }
+            });
+            
+            const data = JSON.parse(response.text);
+            setPack(data);
+          } catch (e) {
+            console.error(e);
+            alert("خطا در دریافت اطلاعات از هوش مصنوعی");
+          }
+          setLoading(false);
+        };
+
+        if (loading) return (
+          <div className="flex flex-col items-center justify-center min-h-screen animate-fade-in text-center p-4">
+            <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-8"></div>
+            <h2 className="text-3xl font-black">{t.analyzing}</h2>
+          </div>
+        );
+
+        if (pack) return (
+          <div className="max-w-6xl mx-auto py-12 px-4 animate-fade-in">
+            <header className="text-center mb-16">
+              <h2 className="text-5xl font-black mb-4" style={{ color: activeColor }}>{pack.title}</h2>
+              <p className="text-xl italic opacity-70">" {pack.quote} "</p>
+            </header>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {pack.movies.map((m, i) => (
+                <div key={i} className="glass-card p-8 rounded-[2rem] hover:scale-105 transition-all border border-white/5 hover:border-red-600/30">
+                  <h3 className="text-2xl font-black mb-2">{m.title}</h3>
+                  <p className="text-red-500 font-bold mb-4">{m.year} • {m.genre}</p>
+                  <p className="opacity-80 text-sm leading-relaxed mb-6">{m.desc}</p>
+                  <div className="bg-white/5 p-4 rounded-xl text-xs italic" style={{ color: activeColor }}>{m.why}</div>
+                </div>
+              ))}
+            </div>
+            <div className="text-center mt-16">
+              <button onClick={() => { setPack(null); setStep(1); }} className="text-slate-500 hover:text-white transition-colors underline">{t.reset}</button>
+            </div>
+          </div>
+        );
+
+        return (
+          <div className="min-h-screen flex flex-col items-center py-12 px-4">
+            <header className="text-center mb-16 animate-fade-in">
+              <h1 className="text-6xl md:text-8xl netflix-logo netflix-red mb-2">{t.title}</h1>
+              <p className="text-sm md:text-xl tracking-[0.4em] opacity-50 uppercase font-bold">{t.subtitle}</p>
+            </header>
+
+            <main className="w-full flex justify-center animate-fade-in max-w-5xl">
+              {step === 1 && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+                  {Object.keys(PrimaryMood).map(mKey => {
+                    const mood = PrimaryMood[mKey];
+                    return (
+                      <button key={mood} onClick={() => handleSelect('primaryMood', mood)} className="glass-card p-8 rounded-[2rem] flex flex-col items-center gap-4 hover:bg-white/5 transition-all group">
+                        <span className="text-4xl group-hover:scale-125 transition-transform">{MOOD_ICONS[mood]}</span>
+                        <span className="font-black text-sm uppercase tracking-widest">{t.moods[mood]}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {step >= 2 && step <= 4 && (
+                <div className="flex flex-col gap-6 w-full max-w-md">
+                  <h2 className="text-3xl font-black text-center mb-8">{step === 2 ? t.intensityPrompt : step === 3 ? t.energyPrompt : t.mentalPrompt}</h2>
+                  {['low', 'medium', 'high'].map(lvl => (
+                    <button key={lvl} onClick={() => step === 4 ? getRecommendations() : handleSelect(step === 2 ? 'intensity' : 'energy', lvl)} className="glass-card p-8 rounded-[1.5rem] text-xl font-black hover:bg-white/5 transition-all">
+                      {t.levels[lvl]}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </main>
+          </div>
+        );
+      };
+
+      const container = document.getElementById('root');
+      const root = createRoot(container);
+      root.render(<App />);
+    </script>
   </body>
 </html>
