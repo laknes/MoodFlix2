@@ -75,19 +75,8 @@
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
-        animation: slideIn 0.3s ease-out;
       }
 
-      @keyframes slideIn {
-        from { transform: translateX(20px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-      }
-
-      ::-webkit-scrollbar { width: 8px; }
-      ::-webkit-scrollbar-track { background: #050505; }
-      ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-      ::-webkit-scrollbar-thumb:hover { background: #E50914; }
-      
       .animate-fade-in {
         animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
@@ -96,7 +85,6 @@
         to { opacity: 1; transform: translateY(0); }
       }
     </style>
-    <!-- استفاده از importmap برای مدیریت وابستگی‌ها و اطمینان از سازگاری با esm.sh -->
     <script type="importmap">
 {
   "imports": {
@@ -117,11 +105,8 @@
   </head>
   <body>
     <div id="root"></div>
-
-    <!-- esm.sh/run به صورت خودکار اسکریپت‌های tsx را ترجمه و اجرا می‌کند -->
     <script type="module" src="https://esm.sh/run"></script>
-
-    <!-- index.tsx را با تایپ text/babel معرفی می‌کنیم تا توسط esm.sh/run پردازش شود -->
+    <!-- Use text/babel so esm.sh/run transpiles the TSX in the browser -->
     <script type="text/babel" data-type="module" src="./index.tsx"></script>
   </body>
 </html>
