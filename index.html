@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moodflix - AI Movie Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;400;700;900&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'netflix-red': '#E50914',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      :root {
+        --bg-color: #050505;
+        --bg-gradient: radial-gradient(circle at 50% -20%, #301010 0%, #050505 80%);
+      }
+      html.light {
+        --bg-color: #f8fafc;
+        --bg-gradient: radial-gradient(circle at 50% -20%, #fee2e2 0%, #f8fafc 80%);
+      }
+      body {
+        font-family: 'Vazirmatn', sans-serif;
+        background-color: var(--bg-color);
+        background-image: var(--bg-gradient);
+        transition: background-color 0.5s ease;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+      }
+      .light .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+      }
+      .netflix-red {
+        color: #E50914;
+      }
+      .netflix-logo {
+        font-family: 'Vazirmatn', sans-serif;
+        font-weight: 900;
+        letter-spacing: -2px;
+        text-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+      }
+      .gradient-text {
+        background: linear-gradient(135deg, #fff 0%, #888 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .light .gradient-text {
+        background: linear-gradient(135deg, #000 0%, #444 100%);
+        -webkit-background-clip: text;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #050505;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #E50914;
+      }
+      .light ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      .light ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+      }
+      
+      /* Smooth Transitions */
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "recharts": "https://esm.sh/recharts@^3.6.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
