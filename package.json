@@ -11,12 +11,12 @@
   "dependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "@google/genai": "1.34.0",
+    "recharts": "2.12.7",
     "http": "^0.0.1-security",
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
-    "url": "^0.11.4",
-    "@google/genai": "^1.34.0",
-    "recharts": "^3.6.0"
+    "url": "^0.11.4"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

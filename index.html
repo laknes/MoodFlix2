@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,10 +35,11 @@
         font-family: 'Vazirmatn', sans-serif;
         background-color: var(--bg-color);
         background-image: var(--bg-gradient);
-        transition: background-color 0.5s ease;
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         min-height: 100vh;
         margin: 0;
         padding: 0;
+        overflow-x: hidden;
       }
       .glass-card {
         background: rgba(255, 255, 255, 0.03);
@@ -56,7 +57,6 @@
         color: #E50914;
       }
       .netflix-logo {
-        font-family: 'Vazirmatn', sans-serif;
         font-weight: 900;
         letter-spacing: -2px;
         text-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
@@ -70,63 +70,58 @@
         background: linear-gradient(135deg, #000 0%, #444 100%);
         -webkit-background-clip: text;
       }
-      ::-webkit-scrollbar {
-        width: 8px;
+      
+      .layer-badge {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        animation: slideIn 0.3s ease-out;
       }
-      ::-webkit-scrollbar-track {
-        background: #050505;
+
+      @keyframes slideIn {
+        from { transform: translateX(20px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
       }
-      ::-webkit-scrollbar-thumb {
-        background: #333;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #E50914;
-      }
-      .light ::-webkit-scrollbar-track {
-        background: #f1f5f9;
-      }
-      .light ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-      }
+
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #050505; }
+      ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #E50914; }
       
       .animate-fade-in {
-        animation: fadeIn 0.5s ease-out forwards;
+        animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
       @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
       }
     </style>
-  <script type="importmap">
+    <!-- استفاده از importmap برای مدیریت وابستگی‌ها و اطمینان از سازگاری با esm.sh -->
+    <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "@google/genai": "https://esm.sh/@google/genai@1.34.0",
+    "recharts": "https://esm.sh/recharts@2.12.7",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/",
     "http": "https://esm.sh/http@^0.0.1-security",
     "fs": "https://esm.sh/fs@^0.0.1-security",
     "path": "https://esm.sh/path@^0.12.7",
-    "url": "https://esm.sh/url@^0.11.4",
-    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
-    "recharts": "https://esm.sh/recharts@^3.6.0"
+    "url": "https://esm.sh/url@^0.11.4"
   }
 }
 </script>
-</head>
+  </head>
   <body>
     <div id="root"></div>
 
-    <!-- esm.sh/run به طور خودکار تمامی اسکریپت‌های با تایپ text/babel را شناسایی و ترجمه می‌کند -->
-    <script type="module">
-      import { run } from 'https://esm.sh/run';
-      run();
-    </script>
+    <!-- esm.sh/run به صورت خودکار اسکریپت‌های tsx را ترجمه و اجرا می‌کند -->
+    <script type="module" src="https://esm.sh/run"></script>
 
-    <!-- 
-      تغییر تایپ به text/babel باعث می‌شود مرورگر از اجرای مستقیم آن خودداری کند
-      و esm.sh/run مسئولیت ترجمه و اجرای آن را بر عهده بگیرد.
-    -->
+    <!-- index.tsx را با تایپ text/babel معرفی می‌کنیم تا توسط esm.sh/run پردازش شود -->
     <script type="text/babel" data-type="module" src="./index.tsx"></script>
   </body>
 </html>

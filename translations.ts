@@ -2,7 +2,7 @@
 export const translations = {
   fa: {
     title: "MOODFLIX",
-    subtitle: "سینمای هوش هیجانی",
+    subtitle: "آنالیز لایه‌های احساسی سینما",
     tagline: "پلتفرم تحلیل سینمایی بر پایه هوش مصنوعی",
     home: "خانه",
     history: "تاریخچه",
@@ -24,36 +24,36 @@ export const translations = {
     language: "زبان",
     farsi: "فارسی",
     english: "English",
-    analyzing: "در حال تحلیل لایه‌های احساسی...",
-    analyzingSub: "فیلم‌هایی هماهنگ با فرکانس شما در حال انتخاب هستند",
+    analyzing: "در حال ترکیب لایه‌های روحی شما...",
+    analyzingSub: "الگوریتم‌های هوش مصنوعی در حال اسکن دیتابیس سینما برای فرکانس شما هستند",
     reset: "بازگشت و لایه‌بندی دوباره احساسات",
-    historyTitle: "پروفایل احساسی شما در روزهای اخیر",
-    moodPrompt: "حالت روحی اصلی شما چیه؟",
-    intensityPrompt: "شدت این احساس چقدره؟",
-    energyPrompt: "چقدر انرژی برای تماشا داری؟",
-    mentalPrompt: "وضعیت ذهنی الانت چطوره؟",
-    recTypePrompt: "نوع پیشنهاد",
-    discover: "کشف فیلم‌های امشب",
-    skipButton: "بهم پیشنهاد تصادفی بده (سورپرایزم کن)",
+    historyTitle: "تاریخچه فرکانس‌های احساسی شما",
+    moodPrompt: "لایه اول: احساس اصلی شما چیست؟",
+    intensityPrompt: "لایه دوم: شدت این فرکانس چقدر است؟",
+    energyPrompt: "لایه سوم: سطح انرژی فیزیکی شما؟",
+    mentalPrompt: "لایه چهارم: عمق تمرکز ذهنی مورد نیاز؟",
+    recTypePrompt: "لایه آخر: نحوه ارائه پیشنهادات؟",
+    discover: "اسکن و نمایش نتایج نهایی",
+    skipButton: "سورپرایزم کن! (پیشنهادات رندوم و محبوب)",
     popularTitle: "فیلم‌های محبوب و پیشنهادی",
-    shareVibe: "اشتراک‌گذاری حال امشب",
-    musicAtmosphere: "اتمسفر صوتی پیشنهادی",
+    shareVibe: "اشتراک‌گذاری فرکانس امشب",
+    musicAtmosphere: "اتمسفر صوتی پیشنهادی (موسیقی متن)",
     listenOnSpotify: "شنیدن در اسپاتیفای",
     listenOnSoundcloud: "شنیدن در سوند کلاود",
-    copied: "متن در حافظه کپی شد!",
-    bestTime: "زمان پیشنهادی:",
-    favorites: "فیلم‌های محبوب من",
-    noFavorites: "هنوز فیلمی را ذخیره نکرده‌اید.",
-    saveToFav: "افزودن به علاقه‌مندی‌ها",
-    removeFromFav: "حذف از علاقه‌مندی‌ها",
-    preferredGenres: "ژانرهای مورد علاقه",
-    preferredActors: "بازیگران محبوب",
+    copied: "فرکانس در حافظه کپی شد!",
+    bestTime: "زمان پیشنهادی تماشا:",
+    favorites: "آرشیو محبوب‌های من",
+    noFavorites: "هنوز فیلمی در آرشیو لایه‌های محبوب ندارید.",
+    saveToFav: "افزودن به آرشیو",
+    removeFromFav: "حذف از آرشیو",
+    preferredGenres: "ژانرهای منطبق با سلیقه",
+    preferredActors: "بازیگران محبوب شما",
     addActor: "افزودن بازیگر",
-    savePreferences: "ذخیره تغییرات",
+    savePreferences: "ذخیره تنظیمات لایه",
     genreList: ["درام", "کمدی", "اکشن", "علمی تخیلی", "ترسناک", "عاشقانه", "مستند", "انیمیشن", "ماجراجویی", "هیجان‌انگیز"],
     adminDashboard: {
-      title: "داشبورد مدیریتی",
-      apiControl: "مدیریت کلیدهای API",
+      title: "داشبورد مدیریت سیستم",
+      apiControl: "مدیریت کلیدهای هوش مصنوعی",
       userControl: "مدیریت کاربران",
       imdbControl: "یکپارچه‌سازی IMDB",
       status: "وضعیت سیستم",
@@ -65,32 +65,32 @@ export const translations = {
       deployment: "وضعیت استقرار"
     },
     categories: {
-      SAFE: "انتخاب امن و آرام",
-      CHALLENGING: "کمی متفاوت و تازه",
-      DEEP: "سفر به اعماق معنا"
+      SAFE: "انتخاب امن (منطبق بر لایه‌ها)",
+      CHALLENGING: "چالش‌برانگیز (فراتر از لایه‌ها)",
+      DEEP: "سفر عمیق (لایه معنا)"
     },
     recTypes: {
-      quick: "پیشنهاد سریع",
-      triple: "سه‌تایی طلایی",
-      pack: "بسته احساسی",
-      therapy: "مود درمانی"
+      quick: "انتخاب سریع",
+      triple: "سه‌گانه طلایی",
+      pack: "بسته کامل مود",
+      therapy: "سینمادرمانی"
     },
     intensityLevels: {
-      low: "کم",
+      low: "ملایم",
       medium: "متوسط",
-      high: "شدید"
+      high: "شدید و عمیق"
     },
     energyLevels: {
-      very_low: "خیلی کم (قبل خواب)",
+      very_low: "خیلی کم (مود خلسه)",
       low: "کم",
       medium: "متوسط",
-      high: "زیاد"
+      high: "پرانرژی"
     },
     mentalStates: {
-      light: "می‌خوام فکر نکنم",
-      medium: "می‌خوام فکر کنم",
-      fun: "فقط سرگرمی",
-      deep: "معنا و عمق می‌خوام"
+      light: "فقط سرگرمی (بدون نیاز به فکر)",
+      medium: "معمولی",
+      fun: "شاد و مفرح",
+      deep: "فلسفی و عمیق"
     },
     moods: {
       sad: "غمگین",
@@ -106,11 +106,11 @@ export const translations = {
       tired: "خسته",
       nihilistic: "پوچ‌گرا"
     },
-    aiInstruction: "خروجی (توضیحات و دلایل) را به زبان فارسی بنویس."
+    aiInstruction: "خروجی (توضیحات و دلایل) را به زبان فارسی و با لحنی همدلانه بنویس."
   },
   en: {
     title: "MOODFLIX",
-    subtitle: "Emotional Intelligence Cinema",
+    subtitle: "Cinematic Emotional Layer Analysis",
     tagline: "AI-Powered Cinematic Analysis Platform",
     home: "Home",
     history: "History",
@@ -132,36 +132,36 @@ export const translations = {
     language: "Language",
     farsi: "فارسی",
     english: "English",
-    analyzing: "Analyzing emotional layers...",
-    analyzingSub: "Selecting movies tuned to your frequency",
+    analyzing: "Blending your emotional layers...",
+    analyzingSub: "AI algorithms scanning cinema database for your frequency",
     reset: "Go back and re-layer emotions",
-    historyTitle: "Your recent emotional profile",
-    moodPrompt: "What is your primary mood?",
-    intensityPrompt: "How intense is this feeling?",
-    energyPrompt: "How much energy do you have for watching?",
-    mentalPrompt: "What is your current mental state?",
-    recTypePrompt: "Recommendation Type",
-    discover: "Discover Tonight's Movies",
-    skipButton: "Give me random/popular movies (Surprise Me)",
+    historyTitle: "Your recent emotional profiles",
+    moodPrompt: "Layer 01: What is your primary mood?",
+    intensityPrompt: "Layer 02: How intense is this feeling?",
+    energyPrompt: "Layer 03: What is your energy level?",
+    mentalPrompt: "Layer 04: Required mental focus depth?",
+    recTypePrompt: "Final Layer: How should we deliver results?",
+    discover: "Scan and Show Final Matches",
+    skipButton: "Surprise Me! (Random/Popular)",
     popularTitle: "Popular Recommendations",
     shareVibe: "Share Tonight's Vibe",
-    musicAtmosphere: "Suggested Music Atmosphere",
+    musicAtmosphere: "Suggested Soundtrack Atmosphere",
     listenOnSpotify: "Listen on Spotify",
     listenOnSoundcloud: "Listen on SoundCloud",
-    copied: "Copied to clipboard!",
-    bestTime: "Best time:",
-    favorites: "My Favorites",
+    copied: "Frequency copied to clipboard!",
+    bestTime: "Best time to watch:",
+    favorites: "My Layer Archive",
     noFavorites: "You haven't saved any movies yet.",
-    saveToFav: "Add to Favorites",
-    removeFromFav: "Remove from Favorites",
-    preferredGenres: "Preferred Genres",
-    preferredActors: "Preferred Actors",
+    saveToFav: "Save to Archive",
+    removeFromFav: "Remove from Archive",
+    preferredGenres: "Aligned Genres",
+    preferredActors: "Favorite Actors",
     addActor: "Add Actor",
-    savePreferences: "Save Preferences",
+    savePreferences: "Save Layer Settings",
     genreList: ["Drama", "Comedy", "Action", "Sci-Fi", "Horror", "Romance", "Documentary", "Animation", "Adventure", "Thriller"],
     adminDashboard: {
       title: "Admin Dashboard",
-      apiControl: "API Key Management",
+      apiControl: "AI API Management",
       userControl: "User Management",
       imdbControl: "IMDB Integration",
       status: "System Status",
@@ -173,32 +173,32 @@ export const translations = {
       deployment: "Deployment Status"
     },
     categories: {
-      SAFE: "Safe & Calm",
-      CHALLENGING: "Fresh & Different",
-      DEEP: "Deep Dive"
+      SAFE: "Safe Choice (Layer Aligned)",
+      CHALLENGING: "Challenging (Layer Shift)",
+      DEEP: "Deep Dive (Meaning Layer)"
     },
     recTypes: {
       quick: "Quick Choice",
       triple: "Triple Gold",
-      pack: "Mood Pack",
-      therapy: "Therapy Mode"
+      pack: "Full Mood Pack",
+      therapy: "Cinema Therapy"
     },
     intensityLevels: {
-      low: "Low",
+      low: "Gentle",
       medium: "Medium",
-      high: "High"
+      high: "Intense & Deep"
     },
     energyLevels: {
-      very_low: "Very Low (Pre-sleep)",
+      very_low: "Very Low (Trance Mode)",
       low: "Low",
       medium: "Medium",
-      high: "High"
+      high: "High Energy"
     },
     mentalStates: {
-      light: "Don't want to think",
-      medium: "Want to think",
-      fun: "Just entertainment",
-      deep: "Want meaning and depth"
+      light: "Just Fun (No thinking)",
+      medium: "Balanced",
+      fun: "Entertainment",
+      deep: "Philosophical & Deep"
     },
     moods: {
       sad: "Sad",
@@ -214,6 +214,6 @@ export const translations = {
       tired: "Tired",
       nihilistic: "Nihilistic"
     },
-    aiInstruction: "Write the output (descriptions and reasons) in English."
+    aiInstruction: "Write the output (descriptions and reasons) in English with an empathetic tone."
   }
 };
