@@ -37,14 +37,12 @@ const App: React.FC = () => {
     if (savedUser) {
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
-      // For demo purposes, we automatically treat the first user as admin if they use a specific name/email
       if (parsedUser.email === 'admin@moodflix.com') parsedUser.isAdmin = true;
     }
 
-    // Simulate global user management for admin
     setAllUsers([
-      { id: '1', name: 'Admin', email: 'admin@moodflix.com', joinedAt: new Date().toISOString(), favoriteGenres: [], preferredActors: [], isAdmin: true },
-      { id: '2', name: 'Sarah', email: 'sarah@example.com', joinedAt: new Date().toISOString(), favoriteGenres: ['Drama'], preferredActors: ['Jim Carrey'] }
+      { id: '1', name: 'Admin', email: 'admin@moodflix.com', age: 30, joinedAt: new Date().toISOString(), favoriteGenres: [], preferredActors: [], isAdmin: true },
+      { id: '2', name: 'Sarah', email: 'sarah@example.com', age: 22, joinedAt: new Date().toISOString(), favoriteGenres: ['Drama'], preferredActors: ['Jim Carrey'] }
     ]);
   }, []);
 
@@ -126,9 +124,9 @@ const App: React.FC = () => {
     localStorage.setItem('moodflix_user', JSON.stringify(updatedUser));
   };
 
-  const updatePreferences = (genres: string[], actors: string[]) => {
+  const updatePreferences = (genres: string[], actors: string[], age?: number) => {
     if (!user) return;
-    const updatedUser = { ...user, favoriteGenres: genres, preferredActors: actors };
+    const updatedUser = { ...user, favoriteGenres: genres, preferredActors: actors, age: age !== undefined ? age : user.age };
     setUser(updatedUser);
     localStorage.setItem('moodflix_user', JSON.stringify(updatedUser));
   };
@@ -239,6 +237,17 @@ const App: React.FC = () => {
                   </button>
                 </div>
               </div>
+              {user && (
+                <div className="flex flex-col gap-3 p-6 bg-white/5 rounded-2xl border border-white/5">
+                  <label className="text-lg md:text-xl font-bold">{t.age}</label>
+                  <input
+                    type="number"
+                    className="bg-black/40 border border-white/10 rounded-xl px-6 py-4 outline-none focus:border-red-600 transition-all font-bold"
+                    value={user.age}
+                    onChange={(e) => updatePreferences(user.favoriteGenres, user.preferredActors, parseInt(e.target.value))}
+                  />
+                </div>
+              )}
             </div>
           ) : view === 'profile' ? (
             <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
@@ -250,6 +259,7 @@ const App: React.FC = () => {
                     </div>
                     <h2 className="text-3xl md:text-5xl font-black">{user.name}</h2>
                     <p className="text-slate-400 font-bold text-base md:text-xl">{user.email}</p>
+                    <p className="text-red-500 font-black text-sm mt-2">{t.age}: {user.age}</p>
                     {user.isAdmin && (
                       <button onClick={() => setView('admin')} className="mt-4 inline-block bg-red-600/20 text-red-500 px-4 py-1 rounded-full text-xs font-black uppercase">Admin Profile</button>
                     )}
@@ -286,7 +296,6 @@ const App: React.FC = () => {
 
               {user && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Preferences Section */}
                   <div className="glass-card rounded-[2rem] p-6 md:p-12 space-y-10">
                     <div>
                       <h3 className="text-2xl md:text-3xl font-black mb-6">{t.preferredGenres}</h3>
@@ -346,7 +355,6 @@ const App: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Favorites Section */}
                   <div className="glass-card rounded-[2rem] p-6 md:p-12 flex flex-col">
                     <h3 className="text-2xl md:text-3xl font-black mb-8">{t.favorites}</h3>
                     {user.favoriteMovies && user.favoriteMovies.length > 0 ? (

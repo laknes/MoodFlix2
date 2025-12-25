@@ -14,7 +14,8 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
   const [formData, setFormData] = React.useState({
     email: '',
     password: '',
-    name: ''
+    name: '',
+    age: ''
   });
   const t = translations[language];
 
@@ -25,6 +26,7 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
       id: Math.random().toString(36).substr(2, 9),
       name: formData.name || formData.email.split('@')[0],
       email: formData.email,
+      age: parseInt(formData.age) || 18,
       joinedAt: new Date().toISOString(),
       favoriteGenres: [],
       preferredActors: []
@@ -43,16 +45,31 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {mode === 'signup' && (
-            <div>
-              <label className="block text-sm font-bold text-slate-400 mb-2 uppercase">{t.fullName}</label>
-              <input
-                type="text"
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 focus:border-red-600 outline-none transition-all"
-                value={formData.name}
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-sm font-bold text-slate-400 mb-2 uppercase">{t.fullName}</label>
+                <input
+                  type="text"
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 focus:border-red-600 outline-none transition-all"
+                  value={formData.name}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-400 mb-2 uppercase">{t.age}</label>
+                <input
+                  type="number"
+                  required
+                  min="5"
+                  max="120"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 focus:border-red-600 outline-none transition-all"
+                  value={formData.age}
+                  placeholder={t.ageHint}
+                  onChange={e => setFormData({ ...formData, age: e.target.value })}
+                />
+              </div>
+            </>
           )}
           <div>
             <label className="block text-sm font-bold text-slate-400 mb-2 uppercase">{t.email}</label>

@@ -64,9 +64,12 @@ export const getMovieRecommendations = async (state: AppState, language: Languag
   const moodName = primaryMood ? t.moods[primaryMood as keyof typeof t.moods] : (language === 'fa' ? 'عادی' : 'Neutral');
   const intensityName = intensity ? t.intensityLevels[intensity as keyof typeof t.intensityLevels] : '';
   
+  const userAge = user?.age || 18;
+  const ageConstraint = userAge < 18 ? "The user is under 18. Suggest only family-friendly or age-appropriate movies. STRICTLY NO R-RATED OR ADULT CONTENT." : "The user is an adult.";
+
   const moodDesc = isPopularMode 
-    ? `User is looking for popular movies. Language: ${language}.` 
-    : `User mood: ${moodName}, Intensity: ${intensityName}. User profile: Fav Genres: ${user?.favoriteGenres.join(',')}, Fav Actors: ${user?.preferredActors.join(',')}. Language: ${language}.`;
+    ? `User is looking for popular movies. ${ageConstraint} Language: ${language}.` 
+    : `User mood: ${moodName}, Intensity: ${intensityName}. User profile: Age ${userAge}, Fav Genres: ${user?.favoriteGenres.join(',')}, Fav Actors: ${user?.preferredActors.join(',')}. ${ageConstraint} Language: ${language}.`;
 
   const prompt = `You are an empathetic cinematic expert.
 ${moodDesc}
