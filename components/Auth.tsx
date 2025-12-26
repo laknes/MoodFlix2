@@ -15,7 +15,7 @@ interface ValidationErrors {
   password?: string;
   confirmPassword?: string;
   name?: string;
-  age?: string;
+  birthday?: string;
 }
 
 const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
@@ -25,7 +25,7 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
     password: '', 
     confirmPassword: '', 
     name: '', 
-    age: '' 
+    birthday: '' 
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [loading, setLoading] = useState(false);
@@ -44,6 +44,17 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
     return strength;
   };
 
+  const calculateAge = (bday: string) => {
+    const today = new Date();
+    const birthDate = new Date(bday);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
   useEffect(() => {
     if (mode === 'signup') {
       setPasswordStrength(calculatePasswordStrength(formData.password));
@@ -54,7 +65,6 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Real-time error clearing
     if (errors[name as keyof ValidationErrors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
@@ -76,12 +86,12 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
       if (formData.password !== formData.confirmPassword) {
         newErrors.confirmPassword = t.validation.passwordMismatch;
       }
-      if (!formData.age) {
-        newErrors.age = t.validation.ageRequired;
+      if (!formData.birthday) {
+        newErrors.birthday = t.validation.ageRequired;
       } else {
-        const ageNum = parseInt(formData.age);
-        if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
-          newErrors.age = t.validation.ageRange;
+        const age = calculateAge(formData.birthday);
+        if (age < 1 || age > 120) {
+          newErrors.birthday = t.validation.ageRange;
         }
       }
     }
@@ -104,7 +114,7 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
           email: formData.email,
           password: formData.password,
           name: formData.name,
-          age: formData.age
+          birthday: formData.birthday
         });
         setTempUser(user);
         setShowAgeConfirmation(true);
@@ -122,21 +132,8 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
     }
   };
 
-  const getStrengthLabel = () => {
-    if (passwordStrength === 0) return '';
-    if (passwordStrength === 1) return t.validation.strengthWeak;
-    if (passwordStrength === 2) return t.validation.strengthMedium;
-    return t.validation.strengthStrong;
-  };
-
-  const getStrengthColor = () => {
-    if (passwordStrength === 1) return 'bg-red-500';
-    if (passwordStrength === 2) return 'bg-yellow-500';
-    if (passwordStrength === 3) return 'bg-green-500';
-    return 'bg-white/10';
-  };
-
   if (showAgeConfirmation) {
+    const age = calculateAge(formData.birthday);
     return (
       <div className="max-w-md mx-auto py-12 px-4 animate-fade-in">
         <div className="glass-card p-10 rounded-[2.5rem] shadow-2xl text-center">
@@ -148,8 +145,8 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
           <h2 className="text-2xl font-black mb-4 uppercase tracking-tighter">{t.ageHint}</h2>
           <p className="text-slate-400 mb-8 font-medium">
             {language === 'fa' 
-              ? `شما سن خود را ${formData.age} سال وارد کرده‌اید. این اطلاعات برای فیلتر کردن محتوای نامناسب استفاده می‌شود.`
-              : `You entered your age as ${formData.age}. This information is used to filter inappropriate content.`}
+              ? `بر اساس تاریخ تولد شما، سن شما ${age} سال تشخیص داده شد. این برای فیلتر محتوا استفاده می‌شود.`
+              : `Based on your birthday, your age is ${age}. This will be used for content filtering.`}
           </p>
           <button 
             onClick={handleConfirmAge}
@@ -170,7 +167,7 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
 
   return (
     <div className="max-w-md mx-auto py-12 px-4 animate-fade-in">
-      <div className="glass-card p-10 rounded-[2.5rem] shadow-2xl">
+      <div className="glass-card p-10 rounded-[2.5rem] shadow-2xl border border-white/5 dark:border-white/5">
         <h2 className="text-4xl font-black text-center mb-8 gradient-text uppercase tracking-tighter">
           {mode === 'login' ? t.login : t.signup}
         </h2>
@@ -183,29 +180,22 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
                   type="text"
                   name="name"
                   placeholder={t.fullName}
-                  className={`w-full bg-white/5 border ${errors.name ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
+                  className={`w-full bg-white/5 border ${errors.name ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold text-black dark:text-white`}
                   value={formData.name}
                   onChange={handleInputChange}
                 />
                 {errors.name && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.name}</p>}
               </div>
-              <div className="relative group space-y-1">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">{t.birthday}</label>
                 <input
-                  type="number"
-                  name="age"
-                  placeholder={t.age}
-                  className={`w-full bg-white/5 border ${errors.age ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
-                  value={formData.age}
+                  type="date"
+                  name="birthday"
+                  className={`w-full bg-white/5 border ${errors.birthday ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold text-black dark:text-white`}
+                  value={formData.birthday}
                   onChange={handleInputChange}
-                  min="1"
-                  max="120"
                 />
-                {errors.age && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.age}</p>}
-                <div className="absolute top-1/2 -translate-y-1/2 right-4 text-slate-500 group-focus-within:text-red-500 transition-colors pointer-events-none">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
+                {errors.birthday && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.birthday}</p>}
               </div>
             </>
           )}
@@ -215,7 +205,7 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
               type="email"
               name="email"
               placeholder={t.email}
-              className={`w-full bg-white/5 border ${errors.email ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
+              className={`w-full bg-white/5 border ${errors.email ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold text-black dark:text-white`}
               value={formData.email}
               onChange={handleInputChange}
             />
@@ -227,27 +217,11 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
               type="password"
               name="password"
               placeholder={t.password}
-              className={`w-full bg-white/5 border ${errors.password ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
+              className={`w-full bg-white/5 border ${errors.password ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold text-black dark:text-white`}
               value={formData.password}
               onChange={handleInputChange}
             />
             {errors.password && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.password}</p>}
-            
-            {mode === 'signup' && formData.password.length > 0 && (
-              <div className="px-2 pt-2 space-y-1">
-                <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-slate-500">
-                  <span>{t.password}</span>
-                  <span style={{ color: passwordStrength === 1 ? '#ef4444' : passwordStrength === 2 ? '#f59e0b' : passwordStrength === 3 ? '#10b981' : 'inherit' }}>
-                    {getStrengthLabel()}
-                  </span>
-                </div>
-                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden flex gap-0.5">
-                  <div className={`h-full transition-all duration-500 ${passwordStrength >= 1 ? getStrengthColor() : 'bg-transparent'}`} style={{ width: '33.33%' }} />
-                  <div className={`h-full transition-all duration-500 ${passwordStrength >= 2 ? getStrengthColor() : 'bg-transparent'}`} style={{ width: '33.33%' }} />
-                  <div className={`h-full transition-all duration-500 ${passwordStrength >= 3 ? getStrengthColor() : 'bg-transparent'}`} style={{ width: '33.33%' }} />
-                </div>
-              </div>
-            )}
           </div>
 
           {mode === 'signup' && (
@@ -256,7 +230,7 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
                 type="password"
                 name="confirmPassword"
                 placeholder={t.confirmPassword}
-                className={`w-full bg-white/5 border ${errors.confirmPassword ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
+                className={`w-full bg-white/5 border ${errors.confirmPassword ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold text-black dark:text-white`}
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
               />
@@ -274,11 +248,11 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
         </form>
 
         <div className="mt-8 text-center space-y-4">
-          <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setErrors({}); }} className="text-slate-400 hover:text-white font-bold text-sm transition-all">
+          <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setErrors({}); }} className="text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-white font-bold text-sm transition-all">
             {mode === 'login' ? t.noAccount : t.alreadyRegistered}
           </button>
           <div className="pt-4 border-t border-white/5">
-            <button onClick={onCancel} className="text-xs font-black text-slate-600 hover:text-white uppercase tracking-widest">{t.cancel}</button>
+            <button onClick={onCancel} className="text-xs font-black text-slate-500 hover:text-red-600 dark:hover:text-white uppercase tracking-widest">{t.cancel}</button>
           </div>
         </div>
       </div>

@@ -22,7 +22,8 @@ export const getMovieRecommendations = async (
         ...state,
         language,
         userContext: user ? { 
-          age: user.age, 
+          // Fix: Property 'age' does not exist on type 'User'. Replaced with 'birthday'.
+          birthday: user.birthday, 
           name: user.name,
           favoriteGenres: user.favoriteGenres,
           preferredActors: user.preferredActors

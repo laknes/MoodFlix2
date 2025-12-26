@@ -28,6 +28,15 @@ const readDB = (file) => {
 
 const writeDB = (file, data) => fs.writeFileSync(file, JSON.stringify(data, null, 2));
 
+const calculateAge = (bday) => {
+  const today = new Date();
+  const birthDate = new Date(bday);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+  return age;
+};
+
 const logger = {
   info: (msg) => console.log(`[${new Date().toISOString()}] INFO: ${msg}`),
   error: (msg) => console.error(`[${new Date().toISOString()}] ERROR: ${msg}`),
@@ -80,7 +89,7 @@ const server = http.createServer(async (req, res) => {
     // Register
     if (urlPath === '/api/auth/register' && req.method === 'POST') {
       try {
-        const { email, password, name, age } = await getJSONBody(req);
+        const { email, password, name, birthday } = await getJSONBody(req);
         const users = readDB(USERS_FILE);
         if (users.find(u => u.email === email)) {
           res.writeHead(400);
@@ -91,7 +100,7 @@ const server = http.createServer(async (req, res) => {
           email, 
           password, 
           name, 
-          age: parseInt(age) || 18, 
+          birthday, 
           joinedAt: new Date().toISOString(),
           favoriteGenres: [],
           preferredActors: [],
@@ -138,7 +147,6 @@ const server = http.createServer(async (req, res) => {
           return res.end(JSON.stringify({ error: 'User not found' }));
         }
         
-        // Merge updates
         users[userIdx] = { ...users[userIdx], ...data };
         writeDB(USERS_FILE, users);
         
@@ -151,80 +159,59 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
-    // History: Get
-    if (urlPath === '/api/history' && req.method === 'GET') {
-      const userId = parsedUrl.searchParams.get('userId');
-      if (!userId) {
-        res.writeHead(400);
-        return res.end(JSON.stringify({ error: 'Missing userId' }));
-      }
-      const history = readDB(HISTORY_FILE).filter(h => h.userId === userId);
-      res.writeHead(200);
-      return res.end(JSON.stringify(history));
-    }
-
-    // History: Save
-    if (urlPath === '/api/history' && req.method === 'POST') {
-      try {
-        const entry = await getJSONBody(req);
-        const history = readDB(HISTORY_FILE);
-        const newEntry = { ...entry, id: Date.now().toString(), timestamp: new Date().toISOString() };
-        history.push(newEntry);
-        writeDB(HISTORY_FILE, history);
-        res.writeHead(201);
-        return res.end(JSON.stringify(newEntry));
-      } catch (e) {
-        res.writeHead(500);
-        return res.end(JSON.stringify({ error: 'Failed to save history' }));
-      }
-    }
-
     // Recommendations
     if (urlPath === '/api/recommendations' && req.method === 'POST') {
       try {
         const state = await getJSONBody(req);
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        
+        // Admin overrides if provided from client settings
+        const activeModel = state.settings?.activeModel || 'gemini-3-flash-preview';
+        const apiKey = state.apiKey || process.env.API_KEY;
+        const systemInstructionOverride = state.settings?.customSystemPrompt;
+
+        const ai = new GoogleGenAI({ apiKey });
         
         const userContext = state.userContext || {};
+        const age = userContext.birthday ? calculateAge(userContext.birthday) : 18;
         const favGenres = userContext.favoriteGenres?.length ? `Favorite Genres: ${userContext.favoriteGenres.join(', ')}` : '';
         const prefActors = userContext.preferredActors?.length ? `Preferred Actors: ${userContext.preferredActors.join(', ')}` : '';
 
+        const baseSystemPrompt = systemInstructionOverride || "You are an AI cinema therapist. Provide recommendations that fit the emotional layers perfectly.";
+
         const prompt = `
-          Context: Mood-based movie recommendation platform.
-          User Mood: ${state.primaryMood}
-          Intensity: ${state.intensity}
-          Energy Level: ${state.energy}
-          Focus: ${state.mentalState}
-          Language: ${state.language === 'fa' ? 'Persian/Farsi' : 'English'}
-          
-          User Personalization Data:
-          - Age: ${userContext.age || 'Unknown'}
+          ${baseSystemPrompt}
+          User Context:
+          - Language: ${state.language === 'fa' ? 'Farsi/Persian' : 'English'}
+          - Current Mood: ${state.primaryMood} (Intensity: ${state.intensity})
+          - Energy State: ${state.energy}
+          - Cognitive Focus: ${state.mentalState}
+          - Age: ${age}
           - ${favGenres}
           - ${prefActors}
 
-          Task: Suggest 2-3 movies tailored for the user's mood layers AND personalization data. 
-          Prioritize recommendations that match their favorite genres and preferred actors if they don't conflict with the current mood.
-          
-          Return ONLY valid JSON in this format:
+          Safety Rules: 
+          - If age < 17, DO NOT suggest R-rated movies.
+          - If age < 13, DO NOT suggest PG-13 or R-rated movies.
+
+          Output Format: JSON only.
           {
-            "quote": "A single emotional quote matching this vibe",
-            "packTitle": "Creative title for this mood set",
+            "quote": "An emotional quote for this vibe",
+            "packTitle": "Title of the recommendation pack",
             "movies": [
               {
-                "title": "Movie Title",
-                "year": "2023",
-                "genre": "Drama/Sci-Fi",
-                "reason": "Explain why this fits the user's mood layers and personalization in ${state.language === 'fa' ? 'Farsi' : 'English'}",
-                "rating": "8.5",
+                "title": "Movie Name",
+                "year": "Year",
+                "genre": "Genres",
+                "reason": "Why it fits in ${state.language === 'fa' ? 'Farsi' : 'English'}",
                 "category": "SAFE or CHALLENGING or DEEP",
-                "imdb_id": "tt1234567"
+                "imdb_id": "ttXXXXXXX"
               }
             ]
           }
         `;
 
         const response = await ai.models.generateContent({
-          model: 'gemini-3-flash-preview',
+          model: activeModel,
           contents: [{ parts: [{ text: prompt }] }],
           config: { responseMimeType: 'application/json' }
         });

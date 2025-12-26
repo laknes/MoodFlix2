@@ -29,6 +29,18 @@ const ADJACENT_MOODS: Record<PrimaryMood, PrimaryMood[]> = {
   [PrimaryMood.STRESSED]: [PrimaryMood.ANXIOUS, PrimaryMood.TENSE]
 };
 
+// Helper function to calculate age from birthday string
+const calculateAge = (birthday: string): number => {
+  const birthDate = new Date(birthday);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
 export function calculateMovieScore(
   movie: Movie,
   targetMood: PrimaryMood,
@@ -84,7 +96,8 @@ export function getTopRecommendations(
   avoidance: string[],
   user: User | null
 ) {
-  const userAge = user?.age || 18;
+  // Fix: Property 'age' does not exist on type 'User'. Calculated age from 'birthday'.
+  const userAge = user ? calculateAge(user.birthday) : 18;
 
   // Strict Content Filtering Gate
   const filtered = movies.filter(m => {

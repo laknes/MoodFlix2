@@ -18,7 +18,7 @@ const LoadingState: React.FC<{ language: Language }> = ({ language }) => {
   return (
     <div className="flex flex-col items-center justify-center py-16 md:py-24 min-h-[50vh] text-center animate-fade-in">
       <div className="w-16 h-16 md:w-24 md:h-24 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-8"></div>
-      <h2 className="text-2xl md:text-3xl font-black text-white">{t.analyzing}</h2>
+      <h2 className="text-2xl md:text-3xl font-black text-black dark:text-white">{t.analyzing}</h2>
     </div>
   );
 };
@@ -99,6 +99,21 @@ const App: React.FC = () => {
   const handleProfileUpdate = (updatedUser: User) => {
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));
+    
+    // Also update in global user list for admin mock
+    const allUsers = JSON.parse(localStorage.getItem('moodflix_all_users') || '[]');
+    const idx = allUsers.findIndex((u: any) => u.id === updatedUser.id);
+    if (idx !== -1) {
+      allUsers[idx] = updatedUser;
+      localStorage.setItem('moodflix_all_users', JSON.stringify(allUsers));
+    }
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+    setView('home');
+    setPack(null);
   };
 
   const t = translations[language];
@@ -134,7 +149,20 @@ const App: React.FC = () => {
           ) : view === 'auth' ? (
             <Auth 
               language={language} 
-              onAuthComplete={(u) => { setUser(u); setView('home'); syncHistory(u.id); if(pendingSelection) executeSelection(pendingSelection, u); }} 
+              onAuthComplete={(u) => { 
+                setUser(u); 
+                localStorage.setItem('user', JSON.stringify(u));
+                setView('home'); 
+                syncHistory(u.id); 
+                if(pendingSelection) executeSelection(pendingSelection, u); 
+                
+                // Add to global list for admin mock
+                const allUsers = JSON.parse(localStorage.getItem('moodflix_all_users') || '[]');
+                if (!allUsers.find((x: any) => x.email === u.email)) {
+                  allUsers.push(u);
+                  localStorage.setItem('moodflix_all_users', JSON.stringify(allUsers));
+                }
+              }} 
               onCancel={() => setView('home')} 
             />
           ) : view === 'history' ? (
@@ -144,6 +172,17 @@ const App: React.FC = () => {
               user={user} 
               language={language} 
               onUpdate={handleProfileUpdate} 
+              onLogout={handleLogout}
+            />
+          ) : view === 'admin' && user?.isAdmin ? (
+            <AdminPanel 
+              language={language} 
+              users={JSON.parse(localStorage.getItem('moodflix_all_users') || '[]')}
+              onSync={() => {
+                const u = JSON.parse(localStorage.getItem('moodflix_all_users') || '[]');
+                syncHistory(user.id);
+                alert(language === 'fa' ? 'داده‌ها همگام‌سازی شد' : 'Data synchronized');
+              }}
             />
           ) : pack ? (
             <RecommendationDisplay 
@@ -152,7 +191,7 @@ const App: React.FC = () => {
               language={language} 
               onToggleFavorite={() => {}}
               favorites={[]}
-              userAge={user?.age || 18}
+              userAge={user ? (new Date().getFullYear() - new Date(user.birthday).getFullYear()) : 18}
             />
           ) : (
             <MoodSelector onComplete={handleSelection} language={language} />

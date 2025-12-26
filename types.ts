@@ -24,7 +24,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  age: number;
+  birthday: string; // Changed from age: number
   avatar?: string;
   joinedAt: string;
   favoriteGenres: string[];
@@ -80,7 +80,7 @@ export interface AppState {
 
 export interface SystemSettings {
   maintenanceMode: boolean;
-  activeModel: string;
+  activeModel: 'gemini-3-flash-preview' | 'gemini-3-pro-preview';
   customSystemPrompt: string;
   allowGuestMode: boolean;
 }
