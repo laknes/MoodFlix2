@@ -1,3 +1,4 @@
+
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
@@ -32,9 +33,6 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-
-  // Standardize the URL path, removing query strings for file lookups
   const parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
   let urlPath = parsedUrl.pathname;
   
@@ -42,16 +40,41 @@ const server = http.createServer((req, res) => {
     urlPath = '/index.html';
   }
 
-  // Security: prevent directory traversal by resolving the path relative to __dirname
-  const filePath = path.join(__dirname, urlPath);
+  let filePath = path.join(__dirname, urlPath);
 
-  const extname = String(path.extname(filePath)).toLowerCase();
-  const contentType = MIME_TYPES[extname] || 'application/octet-stream';
+  // Helper to serve file
+  const serveFile = (targetPath) => {
+    const extname = String(path.extname(targetPath)).toLowerCase();
+    const contentType = MIME_TYPES[extname] || 'application/octet-stream';
+    fs.readFile(targetPath, (error, content) => {
+      if (error) {
+        res.writeHead(500);
+        res.end('Error');
+      } else {
+        res.writeHead(200, { 'Content-Type': contentType });
+        res.end(content, 'utf-8');
+      }
+    });
+  };
 
-  fs.readFile(filePath, (error, content) => {
-    if (error) {
-      if (error.code === 'ENOENT') {
-        // SPA Fallback: If file doesn't exist, serve index.html for client-side routing
+  // Logic to handle extensionless imports or missing files
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (!err) {
+      serveFile(filePath);
+    } else {
+      // Try adding extensions for modules
+      const extensions = ['.tsx', '.ts', '.js'];
+      let found = false;
+      for (const ext of extensions) {
+        if (fs.existsSync(filePath + ext)) {
+          serveFile(filePath + ext);
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        // SPA Fallback: Serve index.html
         fs.readFile(path.join(__dirname, 'index.html'), (err, indexContent) => {
           if (err) {
             res.writeHead(404);
@@ -61,18 +84,11 @@ const server = http.createServer((req, res) => {
             res.end(indexContent, 'utf-8');
           }
         });
-      } else {
-        res.writeHead(500);
-        res.end('Internal Server Error: ' + error.code + '\n');
       }
-    } else {
-      res.writeHead(200, { 'Content-Type': contentType });
-      res.end(content, 'utf-8');
     }
   });
 });
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Moodflix Server is running at http://0.0.0.0:${PORT}/`);
-  console.log(`Working directory: ${__dirname}`);
 });
