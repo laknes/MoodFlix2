@@ -1,5 +1,5 @@
 
-import { Movie, PrimaryMood, IntensityLevel, MentalDepth, User } from '../types';
+import { Movie, PrimaryMood, IntensityLevel, MentalDepth, User } from './types';
 
 const INTENSITY_SCORES: Record<IntensityLevel, number> = { low: 1, medium: 2, high: 3 };
 const ENERGY_SCORES: Record<string, number> = { very_low: 1, low: 2, medium: 3, high: 4 };
@@ -79,19 +79,11 @@ export function getTopRecommendations(
 ) {
   const userAge = user?.age || 18;
 
-  // Strict Content Filtering Gate
   const filtered = movies.filter(m => {
-    // RATING GATE:
-    // R-rated films are strictly 17+ or 18+ depending on region, we'll enforce 17+ here
     if (userAge < 17 && m.content_rating === 'R') return false;
-    
-    // PG-13 is for 13+
-    if (userAge < 13 && m.content_rating === 'PG-13') return false;
-
-    // Avoidance filters
+    if (userAge < 13 && (m.content_rating === 'PG-13' || m.content_rating === 'R')) return false;
     if (avoidance.includes("خشونت دوست ندارم") && m.is_violent) return false;
     if (avoidance.includes("فیلم خیلی غمگین نشون نده") && m.is_extremely_sad) return false;
-    
     return true;
   });
 
@@ -101,7 +93,6 @@ export function getTopRecommendations(
   })).sort((a, b) => b.score - a.score);
 
   if (scored.length === 0) {
-    // If absolutely nothing matches (unlikely), fallback to safest content available
     const fallbacks = movies.filter(m => m.content_rating === 'G' || m.content_rating === 'PG');
     const safe = fallbacks[0] || movies[0];
     return { safe, challenge: safe, deep: safe };

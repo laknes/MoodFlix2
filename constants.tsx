@@ -2,53 +2,57 @@
 import React from 'react';
 import { PrimaryMood, RecommendationType } from './types';
 
-// Distinct and vibrant color palette for each mood
+// Vibrant and unique color palette for each emotional layer - Curated for depth and personality
 export const MOOD_COLORS: Record<PrimaryMood, string> = {
-  [PrimaryMood.SAD]: '#3B82F6',        // Bright Blue
-  [PrimaryMood.HAPPY]: '#F59E0B',      // Amber/Gold
-  [PrimaryMood.ANXIOUS]: '#F97316',    // Orange
-  [PrimaryMood.ANGRY]: '#EF4444',      // Red
-  [PrimaryMood.BORED]: '#D97706',      // Dark Orange/Brown
-  [PrimaryMood.LONELY]: '#818CF8',     // Indigo
-  [PrimaryMood.ROMANTIC]: '#F472B6',   // Pink
-  [PrimaryMood.TIRED]: '#A78BFA',      // Purple
-  [PrimaryMood.HOPEFUL]: '#22D3EE',    // Cyan
-  [PrimaryMood.NIHILISTIC]: '#334155', // Slate
-  [PrimaryMood.CALM]: '#10B981',      // Emerald
-  [PrimaryMood.EMPTY]: '#64748B'       // Gray/Blue
+  [PrimaryMood.SAD]: '#3B82F6',        // Deep Ocean Blue
+  [PrimaryMood.HAPPY]: '#F59E0B',      // Golden Amber
+  [PrimaryMood.ANXIOUS]: '#F97316',    // Electric Orange
+  [PrimaryMood.ANGRY]: '#EF4444',      // Alert Red
+  [PrimaryMood.BORED]: '#64748B',      // Cool Slate
+  [PrimaryMood.LONELY]: '#6366F1',     // Twilight Indigo
+  [PrimaryMood.ROMANTIC]: '#EC4899',   // Rose Pink
+  [PrimaryMood.TIRED]: '#8B5CF6',      // Dreamy Purple
+  [PrimaryMood.HOPEFUL]: '#10B981',    // Vitality Green
+  [PrimaryMood.NIHILISTIC]: '#1E293B', // Deep Void
+  [PrimaryMood.CALM]: '#06B6D4',       // Serene Cyan
+  [PrimaryMood.EMPTY]: '#94A3B8',      // Misty Grey
+  [PrimaryMood.NOSTALGIC]: '#D97706',  // Sepia Gold
+  [PrimaryMood.INSPIRED]: '#EAB308'    // Electric Spark Yellow
 };
 
-// High-quality Minimalist Line Icons (Lucide Style)
+/**
+ * Minimalist Line Art Icons
+ * Consistent 24x24 viewBox, strokeWidth 1.5, and strokeLinecap round.
+ */
 export const MOOD_ICONS: Record<PrimaryMood, React.ReactNode> = {
   [PrimaryMood.SAD]: (
     <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M7 10h.01M17 10h.01M12 18c-2.5 0-4.5-1.5-4.5-1.5M22 12A10 10 0 1 1 2 12a10 10 0 0 1 20 0Z"/>
+      <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/><path d="M8 15h8"/><path d="M9 9h.01"/><path d="M15 9h.01"/>
     </svg>
   ),
   [PrimaryMood.HAPPY]: (
     <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+      <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/><path d="M8 13a4 4 0 1 0 8 0"/><path d="M9 9h.01"/><path d="M15 9h.01"/>
     </svg>
   ),
   [PrimaryMood.ANXIOUS]: (
     <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8Z"/>
+      <path d="M2 12h2"/><path d="M20 12h2"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m16.24 7.76 1.41-1.41"/><path d="m6.34 17.66-1.41 1.41"/><path d="m17.66 17.66-1.41-1.41"/><path d="m4.93 4.93 1.41 1.41"/><circle cx="12" cy="12" r="3"/>
     </svg>
   ),
   [PrimaryMood.ANGRY]: (
     <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.464-4.5.5-5.5.964 1 1.571 3.357.5 5.5-.5 1-1 1.62-1 3a2.5 2.5 0 0 0 2.5 2.5Z"/>
-      <path d="M15.5 14.5a2.5 2.5 0 0 1-2.5-2.5c0-1.38.5-2 1-3 1.072-2.143.464-4.5-.5-5.5-.964 1-1.571 3.357-.5 5.5.5 1 1 1.62 1 3a2.5 2.5 0 0 1-2.5 2.5Z"/>
+      <path d="m11 12 4-7"/><path d="m13 12-4 7"/><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/><path d="m8 8 8 8"/><path d="m16 8-8 8"/>
     </svg>
   ),
   [PrimaryMood.BORED]: (
     <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/>
+      <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/><path d="M8 12h8"/>
     </svg>
   ),
   [PrimaryMood.LONELY]: (
     <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      <circle cx="12" cy="12" r="1"/><path d="M12 2v20"/><path d="M2 12h20"/><path d="M12 12a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" opacity="0.2"/>
     </svg>
   ),
   [PrimaryMood.ROMANTIC]: (
@@ -58,32 +62,41 @@ export const MOOD_ICONS: Record<PrimaryMood, React.ReactNode> = {
   ),
   [PrimaryMood.TIRED]: (
     <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><path d="M14 8h.01"/><path d="M18 12h.01"/>
     </svg>
   ),
   [PrimaryMood.HOPEFUL]: (
     <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3l1.912 5.886L20.108 9l-5.013 3.633L16.682 21 12 17.25 7.318 21l1.587-8.367L3.892 9l6.196-.114L12 3z"/>
+      <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/><path d="M12 12V2"/>
     </svg>
   ),
   [PrimaryMood.NIHILISTIC]: (
     <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M12 12v9"/><path d="m15 15-3-3-3 3"/>
+      <circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/>
     </svg>
   ),
   [PrimaryMood.CALM]: (
     <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 16c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 8c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+      <path d="M2 12h20"/><path d="M2 7h20"/><path d="M2 17h20"/>
     </svg>
   ),
   [PrimaryMood.EMPTY]: (
     <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" strokeDasharray="4 4"/>
     </svg>
+  ),
+  [PrimaryMood.NOSTALGIC]: (
+    <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/><path d="M16 21v-2a4 4 0 0 0-4-4H6"/>
+    </svg>
+  ),
+  [PrimaryMood.INSPIRED]: (
+    <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2v2"/><path d="M12 18v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+    </svg>
   )
 };
 
-// Recommendation type icons
 export const REC_TYPE_ICONS: Record<RecommendationType, React.ReactNode> = {
   [RecommendationType.QUICK]: (
     <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
   <head>
@@ -8,15 +7,35 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;400;700;900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
+    
     <script>
       window.process = { env: { API_KEY: "" } };
       tailwind.config = {
         darkMode: 'class',
         theme: {
           extend: {
-            colors: { 'netflix-red': '#E50914' }
+            colors: { 'netflix-red': '#E50914' },
+            animation: {
+              'float': 'float 6s ease-in-out infinite',
+              'aura': 'aura 25s ease-in-out infinite',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'shimmer': 'shimmer 3s linear infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' },
+              },
+              aura: {
+                '0%, 100%': { transform: 'translate(0, 0) scale(1) rotate(0deg)' },
+                '33%': { transform: 'translate(50px, -70px) scale(1.1) rotate(10deg)' },
+                '66%': { transform: 'translate(-40px, 30px) scale(0.9) rotate(-10deg)' },
+              },
+              shimmer: {
+                '0%': { transform: 'translateX(-100%)' },
+                '100%': { transform: 'translateX(100%)' }
+              }
+            }
           }
         }
       }
@@ -24,47 +43,74 @@
 
     <style>
       :root {
-        --bg-color: #050505;
-        --bg-gradient: radial-gradient(circle at 50% -20%, #301010 0%, #050505 80%);
+        --bg-color: #020202;
+        --bg-gradient: radial-gradient(circle at 50% -20%, #1a0505 0%, #020202 100%);
+        --glass-bg: rgba(255, 255, 255, 0.015);
+        --glass-border: rgba(255, 255, 255, 0.05);
       }
+      
       body {
         font-family: 'Vazirmatn', sans-serif;
         background-color: var(--bg-color);
         background-image: var(--bg-gradient);
-        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: background 2s cubic-bezier(0.4, 0, 0.2, 1);
         min-height: 100vh;
         margin: 0;
         padding: 0;
         overflow-x: hidden;
-        color: white;
+        color: #e2e8f0;
       }
+
       .glass-card {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--glass-bg);
+        backdrop-filter: blur(32px) saturate(160%);
+        -webkit-backdrop-filter: blur(32px) saturate(160%);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
       }
+
+      .premium-glass {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.005) 100%);
+        backdrop-filter: blur(40px) saturate(140%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 0.03);
+      }
+
       .netflix-red { color: #E50914; }
       .netflix-logo {
         font-weight: 900;
         letter-spacing: -2px;
-        text-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+        text-shadow: 0 0 25px rgba(229, 9, 20, 0.35);
       }
-      .sidebar-item-active {
-        color: #E50914;
-        background: rgba(229, 9, 20, 0.1);
-        border-right: 4px solid #E50914;
+      
+      .gradient-text {
+        background: linear-gradient(to bottom right, #ffffff 40%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
+
       .animate-fade-in {
-        animation: fadeIn 0.5s ease-out forwards;
+        animation: fadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       }
+
       @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
       }
-      ::-webkit-scrollbar { width: 6px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
+      .noise-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        opacity: 0.02;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      }
+
+      ::-webkit-scrollbar { width: 5px; }
+      ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+      ::-webkit-scrollbar-thumb { background: #E5091433; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #E5091466; }
     </style>
 
     <script type="importmap">
@@ -74,8 +120,8 @@
     "react-dom": "https://esm.sh/react-dom@19.0.0",
     "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
     "@google/genai": "https://esm.sh/@google/genai@1.34.0",
+    "recharts": "https://esm.sh/recharts@3.6.0",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "recharts": "https://esm.sh/recharts@^3.6.0",
     "react/": "https://esm.sh/react@^19.2.3/",
     "http": "https://esm.sh/http@^0.0.1-security",
     "fs": "https://esm.sh/fs@^0.0.1-security",
@@ -86,297 +132,8 @@
 </script>
   </head>
   <body>
+    <div class="noise-overlay"></div>
     <div id="root"></div>
-
-    <script type="text/babel" data-type="module">
-      import React, { useState, useEffect } from 'react';
-      import { createRoot } from 'react-dom/client';
-      import { GoogleGenAI, Type } from "@google/genai";
-
-      const MOOD_COLORS = {
-        sad: '#3B82F6', happy: '#F59E0B', anxious: '#F97316', angry: '#EF4444',
-        bored: '#D97706', lonely: '#818CF8', romantic: '#F472B6', tired: '#A78BFA',
-        hopeful: '#22D3EE', nihilistic: '#334155', calm: '#10B981', empty: '#64748B'
-      };
-
-      const MOOD_ICONS = {
-        sad: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M7 10h.01M17 10h.01M12 18c-2.5 0-4.5-1.5-4.5-1.5M22 12A10 10 0 1 1 2 12a10 10 0 0 1 20 0Z"/>
-          </svg>
-        ),
-        happy: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
-          </svg>
-        ),
-        anxious: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8Z"/>
-          </svg>
-        ),
-        angry: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.464-4.5.5-5.5.964 1 1.571 3.357.5 5.5-.5 1-1 1.62-1 3a2.5 2.5 0 0 0 2.5 2.5Z"/>
-            <path d="M15.5 14.5a2.5 2.5 0 0 1-2.5-2.5c0-1.38.5-2 1-3 1.072-2.143.464-4.5-.5-5.5-.964 1-1.571 3.357-.5 5.5.5 1 1 1.62 1 3a2.5 2.5 0 0 1-2.5 2.5Z"/>
-          </svg>
-        ),
-        bored: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/>
-          </svg>
-        ),
-        lonely: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
-        ),
-        romantic: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-          </svg>
-        ),
-        tired: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
-          </svg>
-        ),
-        hopeful: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 3l1.912 5.886L20.108 9l-5.013 3.633L16.682 21 12 17.25 7.318 21l1.587-8.367L3.892 9l6.196-.114L12 3z"/>
-          </svg>
-        ),
-        nihilistic: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M12 12v9"/><path d="m15 15-3-3-3 3"/>
-          </svg>
-        ),
-        calm: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 16c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 8c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
-          </svg>
-        ),
-        empty: (
-          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" strokeDasharray="4 4"/>
-          </svg>
-        )
-      };
-
-      const translations = {
-        fa: {
-          title: "MOODFLIX", subtitle: "آنالیز لایه‌های احساسی سینما",
-          home: "خانه", history: "تاریخچه", profile: "پروفایل", settings: "تنظیمات", admin: "مدیریت",
-          moodPrompt: "لایه اول: احساس اصلی شما؟",
-          intensityPrompt: "لایه دوم: شدت احساس؟",
-          energyPrompt: "لایه سوم: سطح انرژی؟",
-          mentalPrompt: "لایه چهارم: عمق تمرکز؟",
-          discover: "نمایش فرکانس نهایی", analyzing: "در حال آنالیز لایه‌ها...", reset: "تغییر لایه‌ها",
-          levels: { low: "ملایم", medium: "متوسط", high: "شدید" },
-          moods: {
-            sad: "غمگین", happy: "شاد", anxious: "مضطرب", angry: "عصبانی", bored: "بی‌حوصله",
-            lonely: "تنها", romantic: "عاشقانه", tired: "خسته", hopeful: "امیدوار", nihilistic: "پوچ‌گرا",
-            calm: "آرام", empty: "پوچ"
-          }
-        }
-      };
-
-      const App = () => {
-        const [view, setView] = useState('home');
-        const [step, setStep] = useState(1);
-        const [loading, setLoading] = useState(false);
-        const [pack, setPack] = useState(null);
-        const [selection, setSelection] = useState({
-          primaryMood: null, intensity: null, energy: null, mentalState: null
-        });
-        const [history, setHistory] = useState([]);
-
-        const t = translations.fa;
-        const activeColor = selection.primaryMood ? MOOD_COLORS[selection.primaryMood] : '#E50914';
-
-        useEffect(() => {
-          if (selection.primaryMood && view === 'home') {
-            document.body.style.setProperty('--bg-gradient', `radial-gradient(circle at 50% -20%, ${MOOD_COLORS[selection.primaryMood]}33 0%, #050505 80%)`);
-          }
-        }, [selection.primaryMood, view]);
-
-        const handleSelect = (key, value) => {
-          setSelection(prev => ({ ...prev, [key]: value }));
-          setStep(s => s + 1);
-        };
-
-        const getRecommendations = async () => {
-          setLoading(true);
-          try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || window.process.env.API_KEY });
-            const prompt = `Suggest 3 movies for mood: ${selection.primaryMood}, intensity: ${selection.intensity}. Return JSON: {quote: string, title: string, movies: [{title, year, genre, desc, why, rating}]}. Language: Persian.`;
-            const response = await ai.models.generateContent({
-              model: 'gemini-3-flash-preview',
-              contents: [{ parts: [{ text: prompt }] }],
-              config: { responseMimeType: "application/json" }
-            });
-            const data = JSON.parse(response.text);
-            setPack(data);
-            setHistory(prev => [{...data, date: new Date().toLocaleTimeString('fa-IR')}, ...prev]);
-          } catch (e) {
-            alert("خطا در دریافت اطلاعات");
-          }
-          setLoading(false);
-        };
-
-        const Sidebar = () => (
-          <div className="fixed right-0 top-0 bottom-0 w-20 hover:w-64 bg-black/80 backdrop-blur-xl border-l border-white/5 transition-all duration-300 z-50 hidden lg:flex flex-col group overflow-hidden">
-            <div className="p-6 mb-10 text-center">
-              <h1 className="netflix-logo netflix-red text-2xl group-hover:text-4xl transition-all">M</h1>
-            </div>
-            <nav className="flex flex-col gap-2 px-2">
-              {[
-                { id: 'home', label: t.home, icon: '🏠' },
-                { id: 'history', label: t.history, icon: '📜' },
-                { id: 'profile', label: t.profile, icon: '👤' },
-                { id: 'settings', label: t.settings, icon: '⚙️' },
-                { id: 'admin', label: t.admin, icon: '🛠️' },
-              ].map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => setView(item.id)}
-                  className={`flex items-center gap-6 p-4 rounded-2xl transition-all ${view === item.id ? 'bg-red-600/20 text-red-500 border-r-4 border-red-600' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
-                >
-                  <span className="text-2xl">{item.icon}</span>
-                  <span className="font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">{item.label}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
-        );
-
-        const BottomBar = () => (
-          <div className="fixed bottom-0 left-0 right-0 h-16 bg-black/90 backdrop-blur-2xl border-t border-white/10 flex lg:hidden items-center justify-around px-4 z-50">
-             {[
-                { id: 'home', icon: '🏠' },
-                { id: 'history', icon: '📜' },
-                { id: 'profile', icon: '👤' },
-                { id: 'settings', icon: '⚙️' }
-              ].map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => setView(item.id)}
-                  className={`text-2xl p-2 rounded-xl transition-all ${view === item.id ? 'text-red-500 bg-red-500/10' : 'text-slate-500'}`}
-                >
-                  {item.icon}
-                </button>
-              ))}
-          </div>
-        );
-
-        const renderHome = () => {
-          if (loading) return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in text-center">
-              <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-8"></div>
-              <h2 className="text-3xl font-black">{t.analyzing}</h2>
-            </div>
-          );
-
-          if (pack) return (
-            <div className="animate-fade-in py-10">
-              <header className="text-center mb-16">
-                <h2 className="text-5xl font-black mb-4" style={{ color: activeColor }}>{pack.title}</h2>
-                <p className="text-xl italic opacity-70 max-w-2xl mx-auto">" {pack.quote} "</p>
-              </header>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {pack.movies.map((m, i) => (
-                  <div key={i} className="glass-card p-8 rounded-[2rem] border border-white/5 hover:border-red-600/30 transition-all">
-                    <h3 className="text-2xl font-black mb-2">{m.title}</h3>
-                    <p className="text-red-500 font-bold mb-4">{m.year} • {m.genre}</p>
-                    <p className="opacity-80 text-sm leading-relaxed mb-6">{m.desc}</p>
-                    <div className="bg-white/5 p-4 rounded-xl text-xs italic" style={{ color: activeColor }}>{m.why}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="text-center mt-16">
-                <button onClick={() => { setPack(null); setStep(1); }} className="text-slate-500 hover:text-white transition-colors underline">{t.reset}</button>
-              </div>
-            </div>
-          );
-
-          return (
-            <div className="animate-fade-in">
-              <header className="text-center mb-16">
-                <h1 className="text-6xl md:text-8xl netflix-logo netflix-red mb-2">{t.title}</h1>
-                <p className="text-sm md:text-xl tracking-[0.4em] opacity-50 uppercase font-bold">{t.subtitle}</p>
-              </header>
-              <main className="w-full flex justify-center max-w-5xl mx-auto">
-                {step === 1 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
-                    {Object.keys(MOOD_ICONS).map(mood => (
-                      <button key={mood} onClick={() => handleSelect('primaryMood', mood)} className="glass-card p-8 rounded-[2rem] flex flex-col items-center gap-4 hover:bg-white/5 transition-all group">
-                        <span className="group-hover:scale-125 transition-transform" style={{ color: MOOD_COLORS[mood] }}>{MOOD_ICONS[mood]}</span>
-                        <span className="font-black text-sm uppercase tracking-widest">{t.moods[mood]}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {step >= 2 && step <= 4 && (
-                  <div className="flex flex-col gap-6 w-full max-w-md">
-                    <h2 className="text-3xl font-black text-center mb-8">
-                      {step === 2 ? t.intensityPrompt : step === 3 ? t.energyPrompt : t.mentalPrompt}
-                    </h2>
-                    {['low', 'medium', 'high'].map(lvl => (
-                      <button key={lvl} onClick={() => step === 4 ? getRecommendations() : handleSelect(step === 2 ? 'intensity' : 'energy', lvl)} className="glass-card p-8 rounded-[1.5rem] text-xl font-black hover:bg-white/5 transition-all">
-                        {t.levels[lvl]}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </main>
-            </div>
-          );
-        };
-
-        const renderHistory = () => (
-          <div className="animate-fade-in py-10 max-w-4xl mx-auto">
-            <h2 className="text-4xl font-black mb-10 text-center">{t.history}</h2>
-            {history.length === 0 ? (
-               <p className="text-center text-slate-500 py-20 italic">هنوز جستجویی انجام نداده‌اید.</p>
-            ) : (
-              <div className="space-y-4">
-                {history.map((item, i) => (
-                  <div key={i} className="glass-card p-6 rounded-3xl flex justify-between items-center">
-                    <div>
-                      <h3 className="text-xl font-black">{item.title}</h3>
-                      <p className="text-sm text-slate-500">{item.date}</p>
-                    </div>
-                    <button onClick={() => setPack(item)} className="bg-red-600/10 text-red-500 px-6 py-2 rounded-full font-bold">مشاهده دوباره</button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-
-        const renderPlaceholder = (title) => (
-          <div className="animate-fade-in py-10 text-center min-h-[60vh] flex flex-col items-center justify-center">
-            <h2 className="text-4xl font-black mb-4">{title}</h2>
-            <p className="text-slate-500">این بخش در نسخه‌های بعدی فعال خواهد شد.</p>
-          </div>
-        );
-
-        return (
-          <div className="lg:pr-20 pb-20 lg:pb-0">
-            <Sidebar />
-            <div className="p-4 md:p-12">
-              {view === 'home' && renderHome()}
-              {view === 'history' && renderHistory()}
-              {view === 'profile' && renderPlaceholder(t.profile)}
-              {view === 'settings' && renderPlaceholder(t.settings)}
-              {view === 'admin' && renderPlaceholder(t.admin)}
-            </div>
-            <BottomBar />
-          </div>
-        );
-      };
-
-      createRoot(document.getElementById('root')).render(<App />);
-    </script>
+    <script type="module" src="index.tsx"></script>
   </body>
 </html>

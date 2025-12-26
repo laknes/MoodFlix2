@@ -1,12 +1,21 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { AppState, MovieRecommendation, MoodPack, PrimaryMood, IntensityLevel, EnergyLevel, MentalDepth, Movie, Language, User } from "../types";
+import { AppState, MovieRecommendation, MoodPack, PrimaryMood, IntensityLevel, EnergyLevel, MentalDepth, Movie, Language, User, SystemSettings } from "../types";
 import { MOVIE_DATABASE } from "../data/movies";
 import { getTopRecommendations } from "./scoringEngine";
 import { translations } from "../translations";
 
-export const getMovieRecommendations = async (state: AppState, language: Language, user: User | null) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export const getMovieRecommendations = async (
+  state: AppState, 
+  language: Language, 
+  user: User | null,
+  dynamicApiKey?: string,
+  settings?: SystemSettings
+) => {
+  // Use dynamic API key from admin panel if provided, otherwise fallback to environment variable
+  const apiKey = dynamicApiKey || process.env.API_KEY;
+  const ai = new GoogleGenAI({ apiKey });
+  
   const { primaryMood, intensity, energy, mentalState, avoidance } = state;
   const t = translations[language];
 
@@ -41,10 +50,18 @@ export const getMovieRecommendations = async (state: AppState, language: Languag
   let safe: Movie, challenge: Movie, deep: Movie;
 
   if (isPopularMode) {
-    const sorted = [...MOVIE_DATABASE].sort((a, b) => b.imdb_score - a.imdb_score);
-    safe = sorted[0];
-    challenge = sorted[sorted.length - 1]; 
-    deep = sorted.find(m => m.mental_depth === 'deep') || sorted[1];
+    const userAge = user?.age || 18;
+    const sorted = [...MOVIE_DATABASE]
+      .filter(m => {
+        if (userAge < 17 && m.content_rating === 'R') return false;
+        if (userAge < 13 && m.content_rating === 'PG-13') return false;
+        return true;
+      })
+      .sort((a, b) => b.imdb_score - a.imdb_score);
+    
+    safe = sorted[0] || MOVIE_DATABASE[0];
+    challenge = sorted[sorted.length - 1] || MOVIE_DATABASE[0]; 
+    deep = sorted.find(m => m.mental_depth === 'deep') || sorted[1] || MOVIE_DATABASE[0];
   } else {
     const recs = getTopRecommendations(
       MOVIE_DATABASE as Movie[],
@@ -60,30 +77,38 @@ export const getMovieRecommendations = async (state: AppState, language: Languag
     deep = recs.deep;
   }
 
-  // 2. Use AI to generate human-like reasons and descriptions in the correct language
+  // 2. Build Prompt
   const moodName = primaryMood ? t.moods[primaryMood as keyof typeof t.moods] : (language === 'fa' ? 'عادی' : 'Neutral');
   const intensityName = intensity ? t.intensityLevels[intensity as keyof typeof t.intensityLevels] : '';
   
   const userAge = user?.age || 18;
-  const ageConstraint = userAge < 18 ? "The user is under 18. Suggest only family-friendly or age-appropriate movies. STRICTLY NO R-RATED OR ADULT CONTENT." : "The user is an adult.";
+  const ageConstraint = userAge < 18 
+    ? `CRITICAL: The user is only ${userAge} years old. You MUST justify why each movie is SAFE and suitable for their age.` 
+    : "The user is an adult.";
 
   const moodDesc = isPopularMode 
-    ? `User is looking for popular movies. ${ageConstraint} Language: ${language}.` 
-    : `User mood: ${moodName}, Intensity: ${intensityName}. User profile: Age ${userAge}, Fav Genres: ${user?.favoriteGenres.join(',')}, Fav Actors: ${user?.preferredActors.join(',')}. ${ageConstraint} Language: ${language}.`;
+    ? `User is looking for popular movies. ${ageConstraint}` 
+    : `User mood: ${moodName}, Intensity: ${intensityName}. Age ${userAge}. Fav Genres: ${user?.favoriteGenres.join(',')}. ${ageConstraint}`;
+
+  // Custom instruction from admin panel
+  const customInstruction = settings?.customSystemPrompt || t.aiInstruction;
 
   const prompt = `You are an empathetic cinematic expert.
-${moodDesc}
-Instructions: ${t.aiInstruction}
+${customInstruction}
+Context: ${moodDesc}
+Language: ${language}
 
-Movie 1 (Safe): ${safe.title}
-Movie 2 (Different): ${challenge.title}
-Movie 3 (Deep): ${deep.title}
+Movies to analyze:
+1. ${safe.title} (Rating: ${safe.content_rating})
+2. ${challenge.title} (Rating: ${challenge.content_rating})
+3. ${deep.title} (Rating: ${deep.content_rating})
 
-For each, explain why it fits specifically for this user's mood and taste, describe it briefly, and suggest a music vibe.`;
+Return detailed emotional reasoning and a perfectly matching music vibe for each in JSON format.
+For each movie, include a 'musicSearchQuery' field that is a highly specific search string (e.g., "Hans Zimmer Interstellar style ambient" or "Slow Lo-fi Jazz for raining nights") that would yield the best atmospheric results on Spotify and SoundCloud.`;
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
+      model: settings?.activeModel || 'gemini-3-flash-preview',
       contents: [{ parts: [{ text: prompt }] }],
       config: {
         responseMimeType: "application/json",
@@ -100,76 +125,57 @@ For each, explain why it fits specifically for this user's mood and taste, descr
                 musicSuggestion: { type: Type.STRING },
                 musicSearchQuery: { type: Type.STRING },
                 timeToWatch: { type: Type.STRING }
-              },
-              required: ["whyItFits", "description", "musicSuggestion", "musicSearchQuery", "timeToWatch"],
-              propertyOrdering: ["whyItFits", "description", "musicSuggestion", "musicSearchQuery", "timeToWatch"]
+              }
             },
-            challenge: {
-              type: Type.OBJECT,
-              properties: {
-                whyItFits: { type: Type.STRING },
-                description: { type: Type.STRING },
-                musicSuggestion: { type: Type.STRING },
-                musicSearchQuery: { type: Type.STRING },
-                timeToWatch: { type: Type.STRING }
-              },
-              required: ["whyItFits", "description", "musicSuggestion", "musicSearchQuery", "timeToWatch"],
-              propertyOrdering: ["whyItFits", "description", "musicSuggestion", "musicSearchQuery", "timeToWatch"]
-            },
-            deep: {
-              type: Type.OBJECT,
-              properties: {
-                whyItFits: { type: Type.STRING },
-                description: { type: Type.STRING },
-                musicSuggestion: { type: Type.STRING },
-                musicSearchQuery: { type: Type.STRING },
-                timeToWatch: { type: Type.STRING }
-              },
-              required: ["whyItFits", "description", "musicSuggestion", "musicSearchQuery", "timeToWatch"],
-              propertyOrdering: ["whyItFits", "description", "musicSuggestion", "musicSearchQuery", "timeToWatch"]
-            }
-          },
-          required: ["emotionalQuote", "packTitle", "safe", "challenge", "deep"],
-          propertyOrdering: ["emotionalQuote", "packTitle", "safe", "challenge", "deep"]
+            challenge: { type: Type.OBJECT, properties: { whyItFits: { type: Type.STRING }, description: { type: Type.STRING }, musicSuggestion: { type: Type.STRING }, musicSearchQuery: { type: Type.STRING }, timeToWatch: { type: Type.STRING } } },
+            deep: { type: Type.OBJECT, properties: { whyItFits: { type: Type.STRING }, description: { type: Type.STRING }, musicSuggestion: { type: Type.STRING }, musicSearchQuery: { type: Type.STRING }, timeToWatch: { type: Type.STRING } } }
+          }
         }
       }
     });
 
     const aiData = JSON.parse(response.text || "{}");
     
-    const getMovieRec = (aiPart: any, movie: Movie, category: 'SAFE' | 'CHALLENGING' | 'DEEP'): MovieRecommendation => ({
-      title: movie.title,
-      year: movie.year,
-      genre: movie.genres.join(', '),
-      description: aiPart?.description || movie.description_en || (language === 'fa' ? "توضیحی در دسترس نیست." : "No description available."),
-      whyItFits: aiPart?.whyItFits || (language === 'fa' ? "این فیلم با وضعیت فعلی شما همخوانی بالایی دارد." : "This movie fits your current vibe perfectly."),
-      rating: movie.imdb_score.toString(),
-      timeToWatch: aiPart?.timeToWatch || (language === 'fa' ? "امشب، در سکوت" : "Tonight, in silence"),
-      category,
-      imdb_id: movie.imdb_id
-    });
+    const getMovieRec = (aiPart: any, movie: Movie, category: 'SAFE' | 'CHALLENGING' | 'DEEP'): MovieRecommendation => {
+      // Prioritize explicit search query, then suggestion text, then movie title + vibe
+      const musicQuery = aiPart?.musicSearchQuery || aiPart?.musicSuggestion || (movie.title + " atmospheric soundtrack");
+      
+      return {
+        title: movie.title,
+        year: movie.year,
+        genre: movie.genres.join(', '),
+        description: aiPart?.description || movie.description_en,
+        whyItFits: aiPart?.whyItFits || "Matches your vibe.",
+        rating: movie.imdb_score.toString(),
+        timeToWatch: aiPart?.timeToWatch || "Tonight",
+        category,
+        imdb_id: movie.imdb_id,
+        content_rating: movie.content_rating,
+        musicSuggestion: aiPart?.musicSuggestion || "Cinematic Vibe",
+        spotifyLink: `https://open.spotify.com/search/${encodeURIComponent(musicQuery)}`,
+        soundcloudLink: `https://soundcloud.com/search?q=${encodeURIComponent(musicQuery)}`
+      };
+    };
 
-    const moviesList: MovieRecommendation[] = [
-      getMovieRec(aiData.safe, safe, 'SAFE'),
-      getMovieRec(aiData.challenge, challenge, 'CHALLENGING'),
-      getMovieRec(aiData.deep, deep, 'DEEP')
-    ];
-
-    const searchQuery = encodeURIComponent(aiData.safe?.musicSearchQuery || "cinema soundtrack");
+    const mainMusicQuery = aiData.safe?.musicSearchQuery || aiData.safe?.musicSuggestion || "cinematic movie soundtrack";
 
     return {
-      name: isPopularMode ? (aiData.packTitle || t.popularTitle) : (aiData.packTitle || t.recTypes.pack),
+      name: aiData.packTitle || t.recTypes.pack,
       iconType: isPopularMode ? 'sparkles' : 'heart',
-      primaryMood: targetMood, // Pass mood through for styling
-      emotionalQuote: aiData.emotionalQuote || (language === 'fa' ? "در سینما، ما چشم‌های دیگری پیدا می‌کنیم." : "In cinema, we find other eyes."),
-      suggestedMusic: aiData.safe?.musicSuggestion || t.musicAtmosphere,
-      spotifyLink: `https://open.spotify.com/search/${searchQuery}`,
-      soundcloudLink: `https://soundcloud.com/search?q=${searchQuery}`,
-      movies: moviesList
+      primaryMood: targetMood,
+      emotionalQuote: aiData.emotionalQuote,
+      suggestedMusic: aiData.safe?.musicSuggestion || "Chill Lo-Fi",
+      spotifyLink: `https://open.spotify.com/search/${encodeURIComponent(mainMusicQuery)}`,
+      soundcloudLink: `https://soundcloud.com/search?q=${encodeURIComponent(mainMusicQuery)}`,
+      movies: [
+        getMovieRec(aiData.safe, safe, 'SAFE'),
+        getMovieRec(aiData.challenge, challenge, 'CHALLENGING'),
+        getMovieRec(aiData.deep, deep, 'DEEP')
+      ]
     } as MoodPack;
 
   } catch (e) {
-    console.error("Gemini API Error details:", e);
+    console.error("AI Error:", e);
     return null;
   }
 };

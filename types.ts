@@ -11,7 +11,9 @@ export enum PrimaryMood {
   ROMANTIC = 'romantic',
   BORED = 'bored',
   TIRED = 'tired',
-  NIHILISTIC = 'nihilistic'
+  NIHILISTIC = 'nihilistic',
+  NOSTALGIC = 'nostalgic',
+  INSPIRED = 'inspired'
 }
 
 export enum RecommendationType {
@@ -46,6 +48,7 @@ export type MentalDepth = 'light' | 'medium' | 'deep';
 export type EmotionalEffect = 'calming' | 'releasing' | 'motivating' | 'reflective';
 export type Theme = 'dark' | 'light';
 export type Language = 'fa' | 'en';
+export type ContentRating = 'G' | 'PG' | 'PG-13' | 'R';
 
 export interface User {
   id: string;
@@ -77,6 +80,7 @@ export interface Movie {
   description_en: string;
   genres: string[];
   actors?: string[];
+  content_rating: ContentRating;
 }
 
 export interface MovieRecommendation {
@@ -89,12 +93,16 @@ export interface MovieRecommendation {
   timeToWatch: string;
   category: 'SAFE' | 'CHALLENGING' | 'DEEP';
   imdb_id?: string;
+  content_rating?: ContentRating;
+  musicSuggestion?: string;
+  spotifyLink?: string;
+  soundcloudLink?: string;
 }
 
 export interface MoodPack {
   name: string;
   iconType: string;
-  primaryMood: PrimaryMood; // Persistent mood for styling
+  primaryMood: PrimaryMood; 
   emotionalQuote: string;
   suggestedMusic: string;
   spotifyLink: string;
@@ -116,4 +124,20 @@ export interface AppState {
   mentalState: MentalState | null;
   recType: RecommendationType;
   avoidance: string[];
+}
+
+export interface ApiKeyConfig {
+  id: string;
+  name: string;
+  key: string;
+  isActive: boolean;
+  provider: 'gemini' | 'openai' | 'other';
+  usageCount: number;
+}
+
+export interface SystemSettings {
+  maintenanceMode: boolean;
+  activeModel: 'gemini-3-flash-preview' | 'gemini-3-pro-preview';
+  customSystemPrompt: string;
+  allowGuestMode: boolean;
 }
