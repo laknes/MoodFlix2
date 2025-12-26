@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Language, User } from '../types';
 import { translations } from '../translations';
+import { loginUser, registerUser } from '../services/authService';
 
 interface Props {
   language: Language;
@@ -9,150 +10,232 @@ interface Props {
   onCancel: () => void;
 }
 
+interface ValidationErrors {
+  email?: string;
+  password?: string;
+  name?: string;
+  age?: string;
+}
+
 const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
-  const [mode, setMode] = React.useState<'login' | 'signup'>('login');
-  const [formData, setFormData] = React.useState({
-    email: '',
-    password: '',
-    name: '',
-    age: ''
-  });
-  const [ageConfirmed, setAgeConfirmed] = useState(false);
+  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [formData, setFormData] = useState({ email: '', password: '', name: '', age: '' });
+  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [loading, setLoading] = useState(false);
+  const [showAgeConfirmation, setShowAgeConfirmation] = useState(false);
+  const [tempUser, setTempUser] = useState<User | null>(null);
+  const [passwordStrength, setPasswordStrength] = useState(0); // 0 to 3
+  
   const t = translations[language];
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (mode === 'signup') {
-        if (!formData.age) {
-            alert(language === 'fa' ? 'لطفا سن خود را وارد کنید' : 'Please enter your age');
-            return;
-        }
-        if (!ageConfirmed) {
-            alert(language === 'fa' ? 'لطفا تاییدیه سن را علامت بزنید' : 'Please confirm your age');
-            return;
-        }
-    }
-
-    // Simulated Authentication
-    const user: User = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: formData.name || formData.email.split('@')[0],
-      email: formData.email,
-      age: parseInt(formData.age) || 18,
-      joinedAt: new Date().toISOString(),
-      favoriteGenres: [],
-      preferredActors: []
-    };
-    
-    localStorage.setItem('moodflix_user', JSON.stringify(user));
-    onAuthComplete(user);
+  const calculatePasswordStrength = (pass: string) => {
+    if (!pass) return 0;
+    let strength = 0;
+    if (pass.length >= 6) strength = 1;
+    if (pass.length >= 10 && /[0-9]/.test(pass) && /[a-z]/i.test(pass)) strength = 2;
+    if (pass.length >= 12 && /[0-9]/.test(pass) && /[A-Z]/.test(pass) && /[^A-Za-z0-9]/.test(pass)) strength = 3;
+    return strength;
   };
 
-  return (
-    <div className="w-full max-w-lg mx-auto py-6 md:py-12 animate-fade-in">
-      <div className="glass-card p-8 md:p-14 rounded-[2.5rem] md:rounded-[3.5rem] border-white/10 shadow-[0_0_80px_rgba(229,9,20,0.15)]">
-        <div className="text-center mb-10">
-          <h2 className="text-4xl md:text-5xl font-black netflix-red mb-4 tracking-tighter">
-            {mode === 'login' ? t.login : t.signup}
-          </h2>
-          <p className="text-slate-400 font-bold text-sm md:text-base">
-            {mode === 'signup' ? t.ageHint : t.authRequired}
-          </p>
-        </div>
+  useEffect(() => {
+    if (mode === 'signup') {
+      setPasswordStrength(calculatePasswordStrength(formData.password));
+    }
+  }, [formData.password, mode]);
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+  const validate = (): boolean => {
+    const newErrors: ValidationErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.email || !emailRegex.test(formData.email)) {
+      newErrors.email = t.validation.emailInvalid;
+    }
+    if (!formData.password || formData.password.length < 6) {
+      newErrors.password = t.validation.passwordShort;
+    }
+
+    if (mode === 'signup') {
+      if (!formData.name) newErrors.name = t.validation.nameRequired;
+      if (!formData.age) {
+        newErrors.age = t.validation.ageRequired;
+      } else {
+        const ageNum = parseInt(formData.age);
+        if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
+          newErrors.age = t.validation.ageRange;
+        }
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setLoading(true);
+    try {
+      if (mode === 'login') {
+        const user = await loginUser({ email: formData.email, password: formData.password });
+        onAuthComplete(user);
+      } else {
+        const user = await registerUser(formData);
+        setTempUser(user);
+        setShowAgeConfirmation(true);
+      }
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConfirmAge = () => {
+    if (tempUser) {
+      onAuthComplete(tempUser);
+    }
+  };
+
+  const getStrengthLabel = () => {
+    if (passwordStrength === 0) return '';
+    if (passwordStrength === 1) return t.validation.strengthWeak;
+    if (passwordStrength === 2) return t.validation.strengthMedium;
+    return t.validation.strengthStrong;
+  };
+
+  const getStrengthColor = () => {
+    if (passwordStrength === 1) return 'bg-red-500';
+    if (passwordStrength === 2) return 'bg-yellow-500';
+    if (passwordStrength === 3) return 'bg-green-500';
+    return 'bg-white/10';
+  };
+
+  if (showAgeConfirmation) {
+    return (
+      <div className="max-w-md mx-auto py-12 px-4 animate-fade-in">
+        <div className="glass-card p-10 rounded-[2.5rem] shadow-2xl text-center">
+          <div className="w-20 h-20 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-black mb-4 uppercase tracking-tighter">{t.ageHint}</h2>
+          <p className="text-slate-400 mb-8 font-medium">
+            {language === 'fa' 
+              ? `شما سن خود را ${formData.age} سال وارد کرده‌اید. این اطلاعات برای فیلتر کردن محتوای نامناسب استفاده می‌شود.`
+              : `You entered your age as ${formData.age}. This information is used to filter inappropriate content.`}
+          </p>
+          <button 
+            onClick={handleConfirmAge}
+            className="w-full bg-red-600 text-white font-black py-5 rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-red-600/20 uppercase mb-4"
+          >
+            {t.ageGateConfirmation}
+          </button>
+          <button 
+            onClick={() => setShowAgeConfirmation(false)}
+            className="text-slate-500 font-bold text-sm hover:text-white transition-colors"
+          >
+            {t.cancel}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-md mx-auto py-12 px-4 animate-fade-in">
+      <div className="glass-card p-10 rounded-[2.5rem] shadow-2xl">
+        <h2 className="text-4xl font-black text-center mb-8 gradient-text uppercase tracking-tighter">
+          {mode === 'login' ? t.login : t.signup}
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'signup' && (
-            <div className="space-y-5 animate-in slide-in-from-top-4 duration-500">
-              <div>
-                <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase mb-2 tracking-[0.2em]">{t.fullName}</label>
+            <>
+              <div className="space-y-1">
                 <input
                   type="text"
-                  required
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold placeholder:text-slate-700 text-lg"
-                  placeholder="e.g. John Doe"
+                  placeholder={t.fullName}
+                  className={`w-full bg-white/5 border ${errors.name ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
                 />
+                {errors.name && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.name}</p>}
               </div>
-              <div>
-                <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase mb-2 tracking-[0.2em]">{t.age}</label>
+              <div className="relative group space-y-1">
                 <input
                   type="number"
-                  required
-                  min="5"
-                  max="120"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold placeholder:text-slate-700 text-lg"
-                  placeholder="18"
+                  placeholder={t.age}
+                  className={`w-full bg-white/5 border ${errors.age ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
                   value={formData.age}
                   onChange={e => setFormData({ ...formData, age: e.target.value })}
+                  min="1"
+                  max="120"
                 />
+                {errors.age && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.age}</p>}
+                <div className="absolute top-1/2 -translate-y-1/2 right-4 text-slate-500 group-focus-within:text-red-500 transition-colors pointer-events-none">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
               </div>
-              <div className="flex items-center gap-3 py-2 bg-red-600/5 px-4 rounded-xl border border-red-600/10">
-                <input 
-                  type="checkbox" 
-                  id="ageConfirm"
-                  className="w-5 h-5 accent-red-600 rounded cursor-pointer"
-                  checked={ageConfirmed}
-                  onChange={e => setAgeConfirmed(e.target.checked)}
-                />
-                <label htmlFor="ageConfirm" className="text-xs md:text-sm font-bold text-slate-400 cursor-pointer select-none">
-                  {t.ageGateConfirmation}
-                </label>
-              </div>
-            </div>
+            </>
           )}
           
-          <div className="space-y-5">
-            <div>
-              <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase mb-2 tracking-[0.2em]">{t.email}</label>
-              <input
-                type="email"
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold placeholder:text-slate-700 text-lg"
-                placeholder="email@example.com"
-                value={formData.email}
-                onChange={e => setFormData({ ...formData, email: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase mb-2 tracking-[0.2em]">{t.password}</label>
-              <input
-                type="password"
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold placeholder:text-slate-700 text-lg"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={e => setFormData({ ...formData, password: e.target.value })}
-              />
-            </div>
+          <div className="space-y-1">
+            <input
+              type="email"
+              placeholder={t.email}
+              className={`w-full bg-white/5 border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
+              value={formData.email}
+              onChange={e => setFormData({ ...formData, email: e.target.value })}
+            />
+            {errors.email && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.email}</p>}
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-red-600 text-white font-black py-5 rounded-2xl hover:bg-red-700 transition-all shadow-xl shadow-red-600/20 active:scale-95 text-xl mt-4"
+          <div className="space-y-1">
+            <input
+              type="password"
+              placeholder={t.password}
+              className={`w-full bg-white/5 border ${errors.password ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
+              value={formData.password}
+              onChange={e => setFormData({ ...formData, password: e.target.value })}
+            />
+            {errors.password && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.password}</p>}
+            
+            {mode === 'signup' && formData.password.length > 0 && (
+              <div className="px-2 pt-2 space-y-1">
+                <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-slate-500">
+                  <span>{t.password}</span>
+                  <span style={{ color: passwordStrength === 1 ? '#ef4444' : passwordStrength === 2 ? '#f59e0b' : passwordStrength === 3 ? '#10b981' : 'inherit' }}>
+                    {getStrengthLabel()}
+                  </span>
+                </div>
+                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden flex gap-0.5">
+                  <div className={`h-full transition-all duration-500 ${passwordStrength >= 1 ? getStrengthColor() : 'bg-transparent'}`} style={{ width: '33.33%' }} />
+                  <div className={`h-full transition-all duration-500 ${passwordStrength >= 2 ? getStrengthColor() : 'bg-transparent'}`} style={{ width: '33.33%' }} />
+                  <div className={`h-full transition-all duration-500 ${passwordStrength >= 3 ? getStrengthColor() : 'bg-transparent'}`} style={{ width: '33.33%' }} />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full bg-red-600 text-white font-black py-5 rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-red-600/20 uppercase"
           >
-            {mode === 'login' ? t.login : t.signup}
+            {loading ? '...' : (mode === 'login' ? t.login : t.signup)}
           </button>
         </form>
 
-        <div className="mt-12 text-center space-y-6">
-          <p className="text-slate-500 font-bold">
+        <div className="mt-8 text-center space-y-4">
+          <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setErrors({}); }} className="text-slate-400 hover:text-white font-bold text-sm transition-all">
             {mode === 'login' ? t.noAccount : t.alreadyRegistered}
-            <button
-              onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-              className="mx-2 text-white hover:text-red-500 font-black transition-all underline underline-offset-8 decoration-red-600/50"
-            >
-              {mode === 'login' ? t.signup : t.login}
-            </button>
-          </p>
-          <div className="flex justify-center pt-4 border-t border-white/5">
-            <button
-              onClick={onCancel}
-              className="text-slate-600 hover:text-white font-black text-xs uppercase tracking-[0.3em] transition-colors"
-            >
-              {t.cancel}
-            </button>
+          </button>
+          <div className="pt-4 border-t border-white/5">
+            <button onClick={onCancel} className="text-xs font-black text-slate-600 hover:text-white uppercase tracking-widest">{t.cancel}</button>
           </div>
         </div>
       </div>

@@ -1,120 +1,110 @@
-# 🎬 Moodflix - AI Movie Intelligence
+# 🎬 Moodflix - Full Stack AI Movie Intelligence
 
-Moodflix is a high-performance, AI-driven cinematic analysis platform powered by Gemini 3 Pro.
-
----
-
-## 🚨 Fixing "Conflicting Server Name" & 502 Errors
-
-If you see the warning `conflicting server name "xxx" ignored`, it means multiple Nginx files are trying to handle port 80 for the same IP. 
-
-**This script will:**
-1. **Force Port 80**: Sets this app as the `default_server`, taking priority over all other configs.
-2. **Auto-Cleanup**: Automatically deletes `/etc/nginx/sites-enabled/default` and any other conflicting files.
-3. **Redirect Logic**: Ensures all traffic on port 80 is correctly routed to your Node.js app.
+Moodflix is a sophisticated movie recommendation platform that utilizes the Gemini API to analyze emotional layers. It features a Node.js backend with a JSON-based database for persistence.
 
 ---
 
-## 🛠 Complete Installation Script (`install.sh`)
+## 🚀 One-Click Deployment Script
 
-Copy the block below, save as `install.sh`, and run with `sudo bash install.sh`.
+This script automates the entire process: installing dependencies, setting up the file-based database, configuring Nginx as a reverse proxy, and launching the application with PM2.
+
+### `setup.sh`
 
 ```bash
 #!/bin/bash
-# MOODFLIX DEFINITIVE INSTALLER v7.0
-# Solves: Nginx Conflicts, 502 Gateway, & Port 80 Redirects
+# MOODFLIX FULL-STACK DEPLOYMENT SCRIPT v1.0
+# Bridges Frontend & Backend + Initializes Database
 
 set -e
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+RED='\033[0;31m'
 NC='\033[0m'
 
-if [ "$EUID" -ne 0 ]; then
-  echo -e "${RED}Error: Run as root (sudo).${NC}"
-  exit 1
-fi
+echo -e "${BLUE}1. System Preparation...${NC}"
+sudo apt-get update && sudo apt-get install -y nginx curl lsof psmisc
 
-echo -e "${BLUE}Step 1: Installing System Dependencies...${NC}"
-apt-get update && apt-get install -y git curl nginx lsof psmisc
+# Ensure Node.js is installed
 if ! command -v node &> /dev/null; then
-    curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-    apt-get install -y nodejs
-fi
-npm install -g pm2 || true
-
-echo -e "\n${BLUE}--- Configuration ---${NC}"
-read -p "Enter Domain or IP (e.g. 185.187.154.156): " DOMAIN
-read -p "Enter App Port (e.g. 3000): " PORT
-PORT=${PORT:-3000}
-
-echo -e "${BLUE}Step 2: Aggressive Nginx Conflict Resolution...${NC}"
-# 1. Disable the default Nginx 'Welcome' page
-rm -f /etc/nginx/sites-enabled/default
-rm -f /etc/nginx/sites-available/default
-
-# 2. Search and remove ANY file containing this Domain/IP to stop the "Conflicting Name" warning
-CONFLICTS=$(grep -rl "server_name.*$DOMAIN" /etc/nginx/sites-enabled/ | grep -v "$DOMAIN" || true)
-if [ ! -z "$CONFLICTS" ]; then
-    echo -e "${YELLOW}Removing conflicting Nginx files: $CONFLICTS${NC}"
-    for f in $CONFLICTS; do rm -f "$f"; done
+    echo -e "${BLUE}Installing Node.js...${NC}"
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo bash -
+    sudo apt-get install -y nodejs
 fi
 
-echo -e "${BLUE}Step 3: Process Management...${NC}"
-# Kill any existing process on the app port
-fuser -k $PORT/tcp || true
-pm2 delete "$DOMAIN" 2>/dev/null || true
+# Install PM2 globally
+sudo npm install -g pm2 || true
 
-# Start server.js via PM2
-PORT=$PORT pm2 start server.js --name "$DOMAIN"
+echo -e "${BLUE}2. Database Initialization...${NC}"
+# Create database directory for persistence
+mkdir -p db
+touch db/users.json
+touch db/history.json
+
+# Initialize JSON files if empty
+if [ ! -s db/users.json ]; then echo "[]" > db/users.json; fi
+if [ ! -s db/history.json ]; then echo "[]" > db/history.json; fi
+chmod -R 777 db
+
+echo -e "${BLUE}3. Application Launch...${NC}"
+# Kill existing processes on port 3000
+sudo fuser -k 3000/tcp || true
+
+# Install local dependencies
+npm install
+
+# Start the server with PM2
+pm2 delete moodflix 2>/dev/null || true
+pm2 start server.js --name "moodflix"
 pm2 save
 
-echo -e "${BLUE}Step 4: Configuring Nginx with default_server...${NC}"
-CONF_PATH="/etc/nginx/sites-available/$DOMAIN"
-cat > $CONF_PATH <<EOF
-# Main Server Block
+echo -e "${BLUE}4. Nginx Reverse Proxy Configuration...${NC}"
+# Configure Nginx to route Port 80 traffic to Port 3000 (Backend API & Frontend)
+sudo rm -f /etc/nginx/sites-enabled/default
+CONF_PATH="/etc/nginx/sites-available/moodflix"
+
+sudo bash -c "cat > $CONF_PATH <<EOF
 server {
-    # 'default_server' ensures this block handles all traffic on port 80
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    
-    server_name $DOMAIN;
+    listen 80;
+    server_name _; # Accept all incoming traffic on Port 80
 
     location / {
-        proxy_pass http://127.0.0.1:$PORT;
+        proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Upgrade \\\$http_upgrade;
         proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header Host \\\$host;
+        proxy_cache_bypass \\\$http_upgrade;
         
-        # Stability Timeouts
-        proxy_read_timeout 150;
-        proxy_connect_timeout 150;
+        # Security & Stability
+        proxy_read_timeout 300;
+        proxy_connect_timeout 300;
     }
 }
-EOF
+EOF"
 
-ln -sf "$CONF_PATH" "/etc/nginx/sites-enabled/"
+sudo ln -sf "$CONF_PATH" "/etc/nginx/sites-enabled/"
+sudo nginx -t && sudo systemctl restart nginx
 
-echo -e "${BLUE}Step 5: Applying Changes...${NC}"
-# Double check Nginx syntax
-nginx -t 
-systemctl restart nginx
-
-echo -e "\n${GREEN}==========================================${NC}"
-echo -e "${GREEN}SUCCESS! Site live at http://$DOMAIN${NC}"
-echo -e "Nginx Warning Fix: 'default_server' active."
-echo -e "Port Redirect: All Port 80 traffic routed to App ($PORT)."
-echo -e "${GREEN}==========================================${NC}"
+echo -e "\n${GREEN}==============================================${NC}"
+echo -e "${GREEN}SUCCESS! Moodflix is now live on Port 80.${NC}"
+echo -e "Frontend and Backend are connected via Port 3000."
+echo -e "Database is initialized in: $(pwd)/db/"
+echo -e "Check logs with: pm2 logs moodflix"
+echo -e "${GREEN}==============================================${NC}"
 ```
 
 ---
 
+## 🏗 System Architecture
+
+- **Frontend**: React (TSX) served as static files by the Node.js server.
+- **Backend**: Node.js `http` server handling API requests (`/api/auth`, `/api/history`, `/api/recommendations`).
+- **Database**: Flat JSON files (`db/users.json`, `db/history.json`) handled with atomic read/write operations for high performance in small-to-medium scale environments.
+- **AI Engine**: Gemini 3 Flash for fast, multi-layered emotional analysis.
+
 ## 👤 Admin Identity
 - **Default Admin Email**: `admin@moodflix.com`
-- **Setup**: Sign up with this email on the Profile page to unlock the Management Dashboard.
+- **Setup**: Sign up with this specific email to automatically unlock the Admin Management Dashboard.
 
 ---
-© 2024 Moodflix AI - Global Emotional Cinema Platform
+© 2025 Moodflix AI - The Cinematic Intelligence Platform

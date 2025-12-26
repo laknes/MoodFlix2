@@ -1,0 +1,28 @@
+
+import { User } from "../types";
+
+export const registerUser = async (formData: any): Promise<User> => {
+  const response = await fetch('/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Registration failed');
+  }
+  return response.json();
+};
+
+export const loginUser = async (credentials: any): Promise<User> => {
+  const response = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(credentials),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Login failed');
+  }
+  return response.json();
+};

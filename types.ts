@@ -1,4 +1,3 @@
-
 export enum PrimaryMood {
   SAD = 'sad',
   CALM = 'calm',
@@ -13,7 +12,13 @@ export enum PrimaryMood {
   TIRED = 'tired',
   NIHILISTIC = 'nihilistic',
   NOSTALGIC = 'nostalgic',
-  INSPIRED = 'inspired'
+  INSPIRED = 'inspired',
+  DREAMY = 'dreamy',
+  EXCITED = 'excited',
+  TENSE = 'tense',
+  PLAYFUL = 'playful',
+  GLOOMY = 'gloomy',
+  STRESSED = 'stressed'
 }
 
 export enum RecommendationType {

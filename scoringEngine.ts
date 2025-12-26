@@ -6,20 +6,26 @@ const ENERGY_SCORES: Record<string, number> = { very_low: 1, low: 2, medium: 3, 
 const DEPTH_SCORES: Record<MentalDepth, number> = { light: 1, medium: 2, deep: 3 };
 
 const ADJACENT_MOODS: Record<PrimaryMood, PrimaryMood[]> = {
-  [PrimaryMood.SAD]: [PrimaryMood.LONELY, PrimaryMood.EMPTY, PrimaryMood.NOSTALGIC],
+  [PrimaryMood.SAD]: [PrimaryMood.LONELY, PrimaryMood.EMPTY, PrimaryMood.NOSTALGIC, PrimaryMood.GLOOMY],
   [PrimaryMood.LONELY]: [PrimaryMood.SAD, PrimaryMood.EMPTY, PrimaryMood.ROMANTIC],
-  [PrimaryMood.EMPTY]: [PrimaryMood.SAD, PrimaryMood.LONELY, PrimaryMood.CALM, PrimaryMood.NIHILISTIC],
-  [PrimaryMood.HAPPY]: [PrimaryMood.HOPEFUL, PrimaryMood.CALM, PrimaryMood.INSPIRED],
-  [PrimaryMood.HOPEFUL]: [PrimaryMood.HAPPY, PrimaryMood.CALM, PrimaryMood.INSPIRED],
-  [PrimaryMood.CALM]: [PrimaryMood.HAPPY, PrimaryMood.HOPEFUL, PrimaryMood.EMPTY],
-  [PrimaryMood.ANXIOUS]: [PrimaryMood.ANGRY, PrimaryMood.SAD],
-  [PrimaryMood.ANGRY]: [PrimaryMood.ANXIOUS],
-  [PrimaryMood.ROMANTIC]: [PrimaryMood.HAPPY, PrimaryMood.LONELY, PrimaryMood.NOSTALGIC],
-  [PrimaryMood.BORED]: [PrimaryMood.CALM, PrimaryMood.EMPTY],
-  [PrimaryMood.TIRED]: [PrimaryMood.CALM, PrimaryMood.EMPTY],
-  [PrimaryMood.NIHILISTIC]: [PrimaryMood.EMPTY, PrimaryMood.SAD],
-  [PrimaryMood.NOSTALGIC]: [PrimaryMood.ROMANTIC, PrimaryMood.SAD, PrimaryMood.CALM],
-  [PrimaryMood.INSPIRED]: [PrimaryMood.HOPEFUL, PrimaryMood.HAPPY, PrimaryMood.CALM]
+  [PrimaryMood.EMPTY]: [PrimaryMood.SAD, PrimaryMood.LONELY, PrimaryMood.CALM, PrimaryMood.NIHILISTIC, PrimaryMood.GLOOMY],
+  [PrimaryMood.HAPPY]: [PrimaryMood.HOPEFUL, PrimaryMood.CALM, PrimaryMood.INSPIRED, PrimaryMood.PLAYFUL, PrimaryMood.EXCITED],
+  [PrimaryMood.HOPEFUL]: [PrimaryMood.HAPPY, PrimaryMood.CALM, PrimaryMood.INSPIRED, PrimaryMood.DREAMY],
+  [PrimaryMood.CALM]: [PrimaryMood.HAPPY, PrimaryMood.HOPEFUL, PrimaryMood.EMPTY, PrimaryMood.DREAMY],
+  [PrimaryMood.ANXIOUS]: [PrimaryMood.ANGRY, PrimaryMood.SAD, PrimaryMood.TENSE, PrimaryMood.STRESSED],
+  [PrimaryMood.ANGRY]: [PrimaryMood.ANXIOUS, PrimaryMood.TENSE],
+  [PrimaryMood.ROMANTIC]: [PrimaryMood.HAPPY, PrimaryMood.LONELY, PrimaryMood.NOSTALGIC, PrimaryMood.DREAMY],
+  [PrimaryMood.BORED]: [PrimaryMood.CALM, PrimaryMood.EMPTY, PrimaryMood.TIRED],
+  [PrimaryMood.TIRED]: [PrimaryMood.CALM, PrimaryMood.EMPTY, PrimaryMood.BORED],
+  [PrimaryMood.NIHILISTIC]: [PrimaryMood.EMPTY, PrimaryMood.SAD, PrimaryMood.GLOOMY],
+  [PrimaryMood.NOSTALGIC]: [PrimaryMood.ROMANTIC, PrimaryMood.SAD, PrimaryMood.CALM, PrimaryMood.DREAMY],
+  [PrimaryMood.INSPIRED]: [PrimaryMood.HOPEFUL, PrimaryMood.HAPPY, PrimaryMood.CALM, PrimaryMood.DREAMY],
+  [PrimaryMood.DREAMY]: [PrimaryMood.INSPIRED, PrimaryMood.HOPEFUL, PrimaryMood.CALM, PrimaryMood.ROMANTIC, PrimaryMood.NOSTALGIC],
+  [PrimaryMood.EXCITED]: [PrimaryMood.HAPPY, PrimaryMood.PLAYFUL, PrimaryMood.INSPIRED],
+  [PrimaryMood.TENSE]: [PrimaryMood.ANXIOUS, PrimaryMood.ANGRY, PrimaryMood.STRESSED],
+  [PrimaryMood.PLAYFUL]: [PrimaryMood.HAPPY, PrimaryMood.EXCITED],
+  [PrimaryMood.GLOOMY]: [PrimaryMood.SAD, PrimaryMood.EMPTY, PrimaryMood.NIHILISTIC],
+  [PrimaryMood.STRESSED]: [PrimaryMood.ANXIOUS, PrimaryMood.TENSE]
 };
 
 export function calculateMovieScore(
