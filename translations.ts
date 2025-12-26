@@ -14,6 +14,7 @@ export const translations = {
     cancel: "انصراف",
     email: "ایمیل",
     password: "رمز عبور",
+    confirmPassword: "تایید رمز عبور",
     fullName: "نام و نام خانوادگی",
     age: "سن شما",
     ageHint: "سن برای فیلتر محتوا الزامی است",
@@ -70,6 +71,7 @@ export const translations = {
     validation: {
       emailInvalid: "ایمیل معتبر نیست",
       passwordShort: "رمز عبور باید حداقل ۶ کاراکتر باشد",
+      passwordMismatch: "رمز عبور و تایید آن مطابقت ندارند",
       nameRequired: "نام الزامی است",
       ageRequired: "سن الزامی است",
       ageRange: "سن باید بین ۱ تا ۱۲۰ باشد",
@@ -149,6 +151,7 @@ export const translations = {
     cancel: "Cancel",
     email: "Email",
     password: "Password",
+    confirmPassword: "Confirm Password",
     fullName: "Full Name",
     age: "Your Age",
     ageHint: "Age is required for content filtering",
@@ -205,6 +208,7 @@ export const translations = {
     validation: {
       emailInvalid: "Invalid email address",
       passwordShort: "Password must be at least 6 characters",
+      passwordMismatch: "Passwords do not match",
       nameRequired: "Full name is required",
       ageRequired: "Age is required",
       ageRange: "Age must be between 1 and 120",

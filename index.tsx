@@ -21,7 +21,6 @@ export enum MentalState { LIGHT = 'light', MEDIUM = 'medium', FUN = 'fun', DEEP 
 
 export type IntensityLevel = 'low' | 'medium' | 'high';
 export type MentalDepth = 'light' | 'medium' | 'deep';
-export type EmotionalEffect = 'calming' | 'releasing' | 'motivating' | 'reflective';
 export type Theme = 'dark' | 'light';
 export type Language = 'fa' | 'en';
 export type ContentRating = 'G' | 'PG' | 'PG-13' | 'R';
@@ -110,8 +109,9 @@ export const REC_TYPE_ICONS: Record<string, React.ReactNode> = {
 export const translations = {
   fa: {
     title: "MOODFLIX", subtitle: "تحلیل سینمایی هوشمند", analyzing: "در حال آنالیز...",
-    logout: "خروج", moodPrompt: "۱. حس اصلی شما؟", intensityPrompt: "۲. شدت این حس؟",
-    energyPrompt: "۳. سطح انرژی فیزیکی؟", mentalPrompt: "۴. عمق تمرکز ذهنی؟",
+    login: "ورود", signup: "ثبت‌نام", email: "ایمیل", password: "رمز عبور", fullName: "نام و نام خانوادگی",
+    confirmPassword: "تایید رمز عبور", age: "سن شما", logout: "خروج", moodPrompt: "۱. حس اصلی شما؟",
+    intensityPrompt: "۲. شدت این حس؟", energyPrompt: "۳. سطح انرژی فیزیکی؟", mentalPrompt: "۴. عمق تمرکز ذهنی؟",
     recTypePrompt: "۵. سبک پیشنهاد؟", discover: "مشاهده نتایج نهایی", skipButton: "سورپرایزم کن!",
     historyTitle: "تاریخچه مودهای شما", home: "خانه", history: "تاریخچه", profile: "پروفایل",
     admin: "پنل مدیریت", settings: "تنظیمات", darkMode: "تاریک", lightMode: "روشن", language: "زبان",
@@ -121,16 +121,28 @@ export const translations = {
     energyLevels: { very_low: "خیلی کم", low: "کم", medium: "متوسط", high: "زیاد" },
     mentalStates: { light: "سطحی", medium: "متعادل", fun: "شاد", deep: "عمیق" },
     recTypes: { quick: "سریع", triple: "سه‌گانه", pack: "بسته کامل", therapy: "سینمادرمانی" },
+    validation: {
+      emailInvalid: "ایمیل معتبر نیست",
+      passwordShort: "رمز عبور باید حداقل ۶ کاراکتر باشد",
+      passwordMismatch: "رمز عبور و تایید آن مطابقت ندارند",
+      nameRequired: "نام الزامی است",
+      ageRequired: "سن الزامی است",
+      ageRange: "سن باید بین ۱ تا ۱۲۰ باشد",
+      strengthWeak: "ضعیف",
+      strengthMedium: "متوسط",
+      strengthStrong: "قوی"
+    },
     scanningMessages: ["اسکن فرکانس‌ها..."], layerInsights: { primary: "حس پایه که اتمسفر را می‌سازد." },
     bestTime: "زمان تماشا:", ageRestrictionNotice: "محدودیت سنی فعال شد.", saveToFav: "ذخیره", removeFromFav: "حذف",
     shareTwitter: "توییتر", shareFacebook: "فیس‌بوک", copyLink: "کپی لینک", copied: "کپی شد!", shareMovie: "اشتراک",
     listenOnSpotify: "اسپاتیفای", listenOnSoundcloud: "سوندکلاود", musicAtmosphere: "موسیقی پیشنهادی", shareVibe: "اشتراک مود",
-    reset: "تست دوباره"
+    reset: "تست دوباره", saveChanges: "ذخیره تغییرات"
   },
   en: {
     title: "MOODFLIX", subtitle: "AI Movie Intelligence", analyzing: "Analyzing...",
-    logout: "Logout", moodPrompt: "1. Core Mood", intensityPrompt: "2. Feeling Intensity",
-    energyPrompt: "3. Physical Energy", mentalPrompt: "4. Mental Depth",
+    login: "Login", signup: "Sign Up", email: "Email", password: "Password", fullName: "Full Name",
+    confirmPassword: "Confirm Password", age: "Your Age", logout: "Logout", moodPrompt: "1. Core Mood",
+    intensityPrompt: "2. Feeling Intensity", energyPrompt: "3. Physical Energy", mentalPrompt: "4. Mental Depth",
     recTypePrompt: "5. Delivery Style", discover: "Show Final Matches", skipButton: "Surprise Me!",
     historyTitle: "Your recent vibes", home: "Home", history: "History", profile: "Profile",
     admin: "Admin Panel", settings: "Settings", darkMode: "Dark", lightMode: "Light", language: "Language",
@@ -140,17 +152,64 @@ export const translations = {
     energyLevels: { very_low: "Very Low", low: "Low", medium: "Medium", high: "High" },
     mentalStates: { light: "Light", medium: "Balanced", fun: "Fun", deep: "Deep" },
     recTypes: { quick: "Quick", triple: "Triple", pack: "Full Pack", therapy: "Therapy" },
+    validation: {
+      emailInvalid: "Invalid email address",
+      passwordShort: "Password must be at least 6 characters",
+      passwordMismatch: "Passwords do not match",
+      nameRequired: "Full name is required",
+      ageRequired: "Age is required",
+      ageRange: "Age must be between 1 and 120",
+      strengthWeak: "Weak",
+      strengthMedium: "Medium",
+      strengthStrong: "Strong"
+    },
     scanningMessages: ["Scanning..."], layerInsights: { primary: "The base frequency." },
     bestTime: "Best time:", ageRestrictionNotice: "Age restrictions applied.", saveToFav: "Save", removeFromFav: "Remove",
     shareTwitter: "Twitter", shareFacebook: "Facebook", copyLink: "Copy Link", copied: "Copied!", shareMovie: "Share",
     listenOnSpotify: "Spotify", listenOnSoundcloud: "SoundCloud", musicAtmosphere: "Music atmosphere", shareVibe: "Share vibe",
-    reset: "Test again"
+    reset: "Test again", saveChanges: "Save Changes"
   }
 };
 
 // ==========================================
 // 4. SERVICES
 // ==========================================
+
+export const loginUser = async (credentials: any): Promise<User> => {
+  const response = await fetch('/api/auth/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(credentials),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Login failed');
+  }
+  return response.json();
+};
+
+export const registerUser = async (formData: any): Promise<User> => {
+  const response = await fetch('/api/auth/register', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Registration failed');
+  }
+  return response.json();
+};
+
+export const updateUserProfile = async (userData: Partial<User>): Promise<User> => {
+  const response = await fetch('/api/user/update', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Update failed');
+  }
+  return response.json();
+};
 
 export const getHistory = async (userId: string): Promise<Array<SavedMood>> => {
   const response = await fetch(`/api/history?userId=${userId}`);
@@ -165,13 +224,13 @@ export const getMovieRecommendations = async (state: AppState, language: Languag
   try {
     const response = await fetch('/api/recommendations', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...state, language, userContext: user ? { age: user.age, name: user.name } : null })
+      body: JSON.stringify({ ...state, language, userContext: user ? { age: user.age, name: user.name, favoriteGenres: user.favoriteGenres, preferredActors: user.preferredActors } : null })
     });
     const data = await response.json();
     return {
       name: data.packTitle || "Mood Pack",
       iconType: 'sparkles',
-      primaryMood: state.primaryMood as any,
+      primaryMood: (state.primaryMood as PrimaryMood),
       emotionalQuote: data.quote,
       suggestedMusic: "Cinematic Atmosphere",
       spotifyLink: "#", soundcloudLink: "#",
@@ -196,7 +255,7 @@ const Sidebar: React.FC<any> = ({ theme, language, user, onThemeToggle, onLangTo
       <button onClick={() => onViewChange('history')} className={`p-4 rounded-xl ${activeView === 'history' ? 'text-red-600 bg-red-600/10' : 'text-slate-500 hover:text-white'}`}>
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
       </button>
-      <button onClick={() => onViewChange('profile')} className={`p-4 rounded-xl ${activeView === 'profile' ? 'text-red-600 bg-red-600/10' : 'text-slate-500 hover:text-white'}`}>
+      <button onClick={() => onViewChange(user ? 'profile' : 'auth')} className={`p-4 rounded-xl ${['profile', 'auth'].includes(activeView) ? 'text-red-600 bg-red-600/10' : 'text-slate-500 hover:text-white'}`}>
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
       </button>
       <div className="mt-auto flex flex-col gap-4">
@@ -206,6 +265,123 @@ const Sidebar: React.FC<any> = ({ theme, language, user, onThemeToggle, onLangTo
         <button onClick={() => onLangToggle(language === 'fa' ? 'en' : 'fa')} className="text-slate-500 hover:text-white font-black text-xs">
           {language === 'fa' ? 'EN' : 'FA'}
         </button>
+      </div>
+    </div>
+  );
+};
+
+const Auth: React.FC<any> = ({ language, onAuthComplete, onCancel }) => {
+  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '', name: '', age: '' });
+  const [errors, setErrors] = useState<any>({});
+  const [loading, setLoading] = useState(false);
+  const [strength, setStrength] = useState(0);
+  const t = translations[language];
+
+  const calcStrength = (p: string) => {
+    if (!p) return 0;
+    let s = 0;
+    if (p.length >= 6) s = 1;
+    if (p.length >= 8 && /[0-9]/.test(p) && /[a-z]/i.test(p)) s = 2;
+    if (p.length >= 10 && /[^a-z0-9]/i.test(p)) s = 3;
+    return s;
+  };
+
+  const validate = () => {
+    const e: any = {};
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = t.validation.emailInvalid;
+    if (formData.password.length < 6) e.password = t.validation.passwordShort;
+    if (mode === 'signup') {
+      if (!formData.name) e.name = t.validation.nameRequired;
+      if (formData.password !== formData.confirmPassword) e.confirmPassword = t.validation.passwordMismatch;
+      const ageNum = parseInt(formData.age);
+      if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) e.age = t.validation.ageRange;
+    }
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    setLoading(true);
+    try {
+      const u = mode === 'login' 
+        ? await loginUser({ email: formData.email, password: formData.password }) 
+        : await registerUser(formData);
+      onAuthComplete(u);
+    } catch (err: any) { alert(err.message); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <div className="max-w-md mx-auto py-12 px-4 animate-fade-in">
+      <div className="glass-card p-10 rounded-[2.5rem] shadow-2xl">
+        <h2 className="text-4xl font-black text-center mb-8 gradient-text uppercase tracking-tighter">{mode === 'login' ? t.login : t.signup}</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {mode === 'signup' && (
+            <input type="text" placeholder={t.fullName} className={`w-full bg-white/5 border ${errors.name ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+          )}
+          <input type="email" placeholder={t.email} className={`w-full bg-white/5 border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`} value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+          <div>
+            <input type="password" placeholder={t.password} className={`w-full bg-white/5 border ${errors.password ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`} value={formData.password} onChange={e => { setFormData({ ...formData, password: e.target.value }); setStrength(calcStrength(e.target.value)); }} />
+            {mode === 'signup' && formData.password && (
+              <div className="mt-2 h-1 w-full bg-white/5 rounded-full overflow-hidden flex gap-0.5">
+                <div className={`h-full transition-all ${strength >= 1 ? 'bg-red-500 w-1/3' : 'w-0'}`} />
+                <div className={`h-full transition-all ${strength >= 2 ? 'bg-yellow-500 w-1/3' : 'w-0'}`} />
+                <div className={`h-full transition-all ${strength >= 3 ? 'bg-green-500 w-1/3' : 'w-0'}`} />
+              </div>
+            )}
+          </div>
+          {mode === 'signup' && (
+            <>
+              <input type="password" placeholder={t.confirmPassword} className={`w-full bg-white/5 border ${errors.confirmPassword ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`} value={formData.confirmPassword} onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })} />
+              <input type="number" placeholder={t.age} className={`w-full bg-white/5 border ${errors.age ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`} value={formData.age} onChange={e => setFormData({ ...formData, age: e.target.value })} />
+            </>
+          )}
+          <button type="submit" disabled={loading} className="w-full bg-red-600 text-white font-black py-5 rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-red-600/20 uppercase">{loading ? '...' : (mode === 'login' ? t.login : t.signup)}</button>
+        </form>
+        <div className="mt-8 text-center"><button onClick={() => setMode(mode === 'login' ? 'signup' : 'login')} className="text-slate-400 hover:text-white font-bold text-sm transition-all">{mode === 'login' ? "حساب ندارید؟ ثبت‌نام" : "قبلاً ثبت‌نام کرده‌اید؟ ورود"}</button></div>
+      </div>
+    </div>
+  );
+};
+
+const Profile: React.FC<any> = ({ user, language, onUpdate }) => {
+  const t = translations[language];
+  const [formData, setFormData] = useState({ name: user.name, age: user.age.toString(), favoriteGenres: user.favoriteGenres || [], preferredActors: user.preferredActors?.join(', ') || '' });
+  const [loading, setLoading] = useState(false);
+
+  const GENRE_OPTIONS = ["Action", "Comedy", "Drama", "Sci-Fi", "Horror", "Romance", "Adventure", "Fantasy", "Thriller"];
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const u = await updateUserProfile({ ...formData, id: user.id, age: parseInt(formData.age), preferredActors: formData.preferredActors.split(',').map(s => s.trim()).filter(Boolean) });
+      onUpdate(u);
+      alert(language === 'fa' ? 'بروزرسانی شد!' : 'Updated!');
+    } catch (err) { alert('Update failed'); }
+    finally { setLoading(false); }
+  };
+
+  const toggleGenre = (g: string) => {
+    setFormData(p => ({ ...p, favoriteGenres: p.favoriteGenres.includes(g) ? p.favoriteGenres.filter(i => i !== g) : [...p.favoriteGenres, g] }));
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto py-12 px-4 animate-fade-in">
+      <div className="glass-card p-10 rounded-[2.5rem]">
+        <h2 className="text-4xl font-black mb-10 gradient-text">{t.profile}</h2>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2"><label className="text-[10px] font-black text-slate-500 uppercase px-1">{t.fullName}</label><input type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} /></div>
+            <div className="space-y-2"><label className="text-[10px] font-black text-slate-500 uppercase px-1">{t.age}</label><input type="number" className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold" value={formData.age} onChange={e => setFormData({ ...formData, age: e.target.value })} /></div>
+          </div>
+          <div className="space-y-4"><label className="text-[10px] font-black text-slate-500 uppercase px-1">{language === 'fa' ? 'ژانرهای مورد علاقه' : 'Favorite Genres'}</label><div className="flex flex-wrap gap-2">{GENRE_OPTIONS.map(g => (<button key={g} type="button" onClick={() => toggleGenre(g)} className={`px-4 py-2 rounded-full text-xs font-black transition-all border ${formData.favoriteGenres.includes(g) ? 'bg-red-600 border-red-600 text-white' : 'bg-white/5 border-white/10 text-slate-400 hover:border-white/30'}`}>{g}</button>))}</div></div>
+          <div className="space-y-2"><label className="text-[10px] font-black text-slate-500 uppercase px-1">{language === 'fa' ? 'بازیگران مورد علاقه' : 'Preferred Actors'}</label><textarea className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold min-h-[100px]" value={formData.preferredActors} onChange={e => setFormData({ ...formData, preferredActors: e.target.value })} /></div>
+          <button type="submit" disabled={loading} className="px-12 bg-red-600 text-white font-black py-4 rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-red-600/20 uppercase text-sm">{loading ? '...' : t.saveChanges}</button>
+        </form>
       </div>
     </div>
   );
@@ -228,13 +404,12 @@ const MoodSelector: React.FC<any> = ({ onComplete, language }) => {
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {Object.values(PrimaryMood).map(m => (
           <button key={m} onClick={() => handleSelect('primaryMood', m)} className="glass-card p-6 rounded-3xl hover:scale-105 transition-all flex flex-col items-center gap-2 group">
-             <div style={{ color: MOOD_COLORS[m] }} className="opacity-60 group-hover:opacity-100">{MOOD_ICONS[m]}</div>
-             <span className="text-[10px] font-black uppercase opacity-40">{t.moods[m]}</span>
+             <div style={{ color: MOOD_COLORS[m] }} className="opacity-60 group-hover:opacity-100">{MOOD_ICONS[m as PrimaryMood]}</div>
+             <span className="text-[10px] font-black uppercase opacity-40">{t.moods[m as keyof typeof t.moods]}</span>
           </button>
         ))}
       </div>
     );
-    // Generic step renderer for 2, 3, 4
     const layer = [
       { key: 'intensity', prompt: t.intensityPrompt, options: Object.values(Intensity), trans: t.intensityLevels },
       { key: 'energy', prompt: t.energyPrompt, options: Object.values(EnergyLevel), trans: t.energyLevels },
@@ -261,7 +436,7 @@ const MoodSelector: React.FC<any> = ({ onComplete, language }) => {
              {Object.values(RecommendationType).map(type => (
                 <button key={type} onClick={() => handleSelect('recType', type)} className="glass-card p-8 rounded-3xl flex flex-col items-center gap-4 hover:border-red-600/50 transition-all">
                    {REC_TYPE_ICONS[type]}
-                   <span className="font-black uppercase text-xs">{t.recTypes[type]}</span>
+                   <span className="font-black uppercase text-xs">{t.recTypes[type as keyof typeof t.recTypes]}</span>
                 </button>
              ))}
           </div>
@@ -279,30 +454,12 @@ const RecommendationDisplay: React.FC<any> = ({ pack, onReset, language }) => {
   const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
 
   const getShareText = (movie?: MovieRecommendation) => {
-    if (movie) {
-      return language === 'fa' 
-        ? `🎬 پیشنهاد فیلم بر اساس مود من: ${movie.title} (${movie.year})\n✨ تحلیل شده توسط MOODFLIX\n#سینما #مودفلیکس`
-        : `🎬 Movie recommendation for my vibe: ${movie.title} (${movie.year})\n✨ Analyzed by MOODFLIX\n#Cinema #Moodflix`;
-    }
-    return language === 'fa'
-      ? `🌙 مود الان من: ${pack.name}\n🎬 فیلم پیشنهادی: ${pack.movies[0].title}\n✨ کشف شده در MOODFLIX`
-      : `🌙 My current vibe: ${pack.name}\n🎬 Featured movie: ${pack.movies[0].title}\n✨ Discovered on MOODFLIX`;
-  };
-
-  const shareTwitter = (movie?: MovieRecommendation) => {
-    const text = getShareText(movie);
-    const url = window.location.href;
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-  };
-
-  const shareFacebook = (movie?: MovieRecommendation) => {
-    const url = window.location.href;
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+    if (movie) return language === 'fa' ? `🎬 پیشنهاد فیلم بر اساس مود من: ${movie.title} (${movie.year})\n✨ تحلیل شده توسط MOODFLIX` : `🎬 Movie recommendation: ${movie.title} (${movie.year})\n✨ Analyzed by MOODFLIX`;
+    return language === 'fa' ? `🌙 مود الان من: ${pack.name}\n🎬 فیلم پیشنهادی: ${pack.movies[0].title}` : `🌙 My vibe: ${pack.name}\n🎬 Movie: ${pack.movies[0].title}`;
   };
 
   const copyToClipboard = (movie?: MovieRecommendation) => {
-    const text = getShareText(movie);
-    navigator.clipboard.writeText(text).then(() => {
+    navigator.clipboard.writeText(getShareText(movie)).then(() => {
       setCopyFeedback(movie ? movie.title : 'pack');
       setTimeout(() => setCopyFeedback(null), 2000);
     });
@@ -314,29 +471,8 @@ const RecommendationDisplay: React.FC<any> = ({ pack, onReset, language }) => {
           <div className="flex items-center justify-center gap-4">
             <h2 className="text-5xl font-black gradient-text">{pack.name}</h2>
             <div className="relative">
-               <button 
-                onClick={() => setActiveShare(activeShare === 'pack' ? null : 'pack')}
-                className="p-3 glass-card rounded-full text-slate-500 hover:text-white transition-all"
-               >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-               </button>
-               {activeShare === 'pack' && (
-                 <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 glass-card p-2 rounded-2xl flex gap-2 z-50 animate-fade-in whitespace-nowrap">
-                   <button onClick={() => shareTwitter()} className="p-2 hover:bg-white/5 rounded-xl text-[#1DA1F2]" title={t.shareTwitter}>
-                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
-                   </button>
-                   <button onClick={() => shareFacebook()} className="p-2 hover:bg-white/5 rounded-xl text-[#4267B2]" title={t.shareFacebook}>
-                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                   </button>
-                   <button onClick={() => copyToClipboard()} className={`p-2 hover:bg-white/5 rounded-xl transition-colors ${copyFeedback === 'pack' ? 'text-green-500' : 'text-slate-500'}`} title={t.copyLink}>
-                      {copyFeedback === 'pack' ? (
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                      ) : (
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
-                      )}
-                   </button>
-                 </div>
-               )}
+               <button onClick={() => setActiveShare(activeShare === 'pack' ? null : 'pack')} className="p-3 glass-card rounded-full text-slate-500 hover:text-white transition-all"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg></button>
+               {activeShare === 'pack' && (<div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 glass-card p-2 rounded-2xl flex gap-2 z-50 animate-fade-in whitespace-nowrap"><button onClick={() => copyToClipboard()} className={`p-2 hover:bg-white/5 rounded-xl transition-colors ${copyFeedback === 'pack' ? 'text-green-500' : 'text-slate-500'}`}>{copyFeedback === 'pack' ? "کپی شد" : t.copyLink}</button></div>)}
             </div>
           </div>
           <p className="text-xl italic opacity-70">"{pack.emotionalQuote}"</p>
@@ -344,49 +480,12 @@ const RecommendationDisplay: React.FC<any> = ({ pack, onReset, language }) => {
        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {pack.movies.map((m: any, i: number) => (
             <div key={i} className="glass-card rounded-[2rem] overflow-hidden flex flex-col border-white/5 hover:border-red-600/30 transition-all relative group">
-               <div className="h-64 bg-slate-900 relative">
-                  <img src={`https://picsum.photos/seed/${m.title}/500/800`} className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-                     <div>
-                        <h3 className="text-2xl font-black">{m.title}</h3>
-                        <p className="text-xs opacity-60">{m.year} • {m.genre}</p>
-                     </div>
-                     <div className="relative">
-                        <button 
-                          onClick={() => setActiveShare(activeShare === m.title ? null : m.title)}
-                          className="p-2 bg-black/40 backdrop-blur-md rounded-lg text-white/70 hover:text-white transition-all opacity-0 group-hover:opacity-100"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                        </button>
-                        {activeShare === m.title && (
-                          <div className="absolute bottom-full mb-2 right-0 glass-card p-1.5 rounded-xl flex gap-1 z-50 animate-fade-in shadow-2xl">
-                            <button onClick={() => shareTwitter(m)} className="p-2 hover:bg-white/5 rounded-lg text-[#1DA1F2]"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></button>
-                            <button onClick={() => shareFacebook(m)} className="p-2 hover:bg-white/5 rounded-lg text-[#4267B2]"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></button>
-                            <button onClick={() => copyToClipboard(m)} className={`p-2 hover:bg-white/5 rounded-lg transition-colors ${copyFeedback === m.title ? 'text-green-500' : 'text-white/70'}`}>
-                               {copyFeedback === m.title ? (
-                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                               ) : (
-                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
-                               )}
-                            </button>
-                          </div>
-                        )}
-                     </div>
-                  </div>
-               </div>
-               <div className="p-6 flex-grow space-y-4">
-                  <p className="text-sm opacity-80 leading-relaxed">{m.description}</p>
-                  <p className="text-xs italic" style={{ color: color }}>{m.whyItFits}</p>
-               </div>
+               <div className="h-64 bg-slate-900 relative"><img src={`https://picsum.photos/seed/${m.title}/500/800`} className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700" /><div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" /><div className="absolute bottom-4 left-4 right-4 flex justify-between items-end"><div><h3 className="text-2xl font-black">{m.title}</h3><p className="text-xs opacity-60">{m.year} • {m.genre}</p></div><button onClick={() => copyToClipboard(m)} className={`p-2 bg-black/40 backdrop-blur-md rounded-lg text-white/70 hover:text-white transition-all ${copyFeedback === m.title ? 'text-green-500' : ''}`}><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg></button></div></div>
+               <div className="p-6 flex-grow space-y-4"><p className="text-sm opacity-80 leading-relaxed">{m.description}</p><p className="text-xs italic" style={{ color: color }}>{m.whyItFits}</p></div>
             </div>
           ))}
        </div>
-       <div className="text-center pt-8">
-          <button onClick={onReset} className="px-10 py-4 glass-card rounded-2xl text-slate-500 font-black hover:text-white hover:border-red-600/50 transition-all uppercase tracking-widest text-xs">
-            {t.reset}
-          </button>
-       </div>
+       <div className="text-center"><button onClick={onReset} className="text-slate-500 font-bold hover:text-white transition-colors">{t.reset}</button></div>
     </div>
   );
 };
@@ -396,10 +495,7 @@ const RecommendationDisplay: React.FC<any> = ({ pack, onReset, language }) => {
 // ==========================================
 
 const LoadingState: React.FC<{ language: Language }> = ({ language }) => (
-  <div className="flex flex-col items-center justify-center py-24 min-h-[60vh] text-center">
-    <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-8"></div>
-    <h2 className="text-3xl font-black text-white">{translations[language].analyzing}</h2>
-  </div>
+  <div className="flex flex-col items-center justify-center py-24 min-h-[60vh] text-center"><div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-8"></div><h2 className="text-3xl font-black text-white">{translations[language].analyzing}</h2></div>
 );
 
 const App: React.FC = () => {
@@ -416,13 +512,7 @@ const App: React.FC = () => {
     const savedLang = localStorage.getItem('moodflix_lang') as Language || 'fa';
     const savedUser = localStorage.getItem('moodflix_user');
     setTheme(savedTheme); setLanguage(savedLang);
-    if (savedUser) {
-      try {
-        const u = JSON.parse(savedUser);
-        setUser(u);
-        getHistory(u.id).then(setHistory);
-      } catch(e) {}
-    }
+    if (savedUser) { try { const u = JSON.parse(savedUser); setUser(u); getHistory(u.id).then(setHistory); } catch(e) {} }
   }, []);
 
   useEffect(() => {
@@ -446,19 +536,17 @@ const App: React.FC = () => {
     setLoading(false);
   };
 
+  const handleAuth = (u: User) => { setUser(u); setView('home'); localStorage.setItem('moodflix_user', JSON.stringify(u)); getHistory(u.id).then(setHistory); };
+
   const renderContent = () => {
     if (loading) return <LoadingState language={language} />;
+    if (view === 'auth') return <Auth language={language} onAuthComplete={handleAuth} onCancel={() => setView('home')} />;
+    if (view === 'profile' && user) return <Profile user={user} language={language} onUpdate={setUser} />;
     if (view === 'history') return (
        <div className="max-w-4xl mx-auto py-12 space-y-6">
           <h2 className="text-4xl font-black text-center mb-12">{translations[language].historyTitle}</h2>
           {history.length === 0 ? <p className="text-center opacity-40">No entries yet.</p> : history.map((h, i) => (
-            <div key={i} className="glass-card p-6 rounded-2xl flex justify-between items-center">
-               <div>
-                  <p className="font-black">{translations[language].moods[h.mood as keyof typeof translations.fa.moods]}</p>
-                  <p className="text-xs opacity-50">{h.date}</p>
-               </div>
-               <p className="font-black text-red-600">{h.movieTitle}</p>
-            </div>
+            <div key={i} className="glass-card p-6 rounded-2xl flex justify-between items-center"><div><p className="font-black">{translations[language].moods[h.mood as keyof typeof translations.fa.moods] || h.mood}</p><p className="text-xs opacity-50">{h.date}</p></div><p className="font-black text-red-600">{h.movieTitle}</p></div>
           ))}
        </div>
     );

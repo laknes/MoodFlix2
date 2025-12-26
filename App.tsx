@@ -16,9 +16,9 @@ import { getHistory, saveHistory } from './services/historyService';
 const LoadingState: React.FC<{ language: Language }> = ({ language }) => {
   const t = translations[language];
   return (
-    <div className="flex flex-col items-center justify-center py-24 min-h-[60vh] text-center animate-fade-in">
-      <div className="w-24 h-24 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-8"></div>
-      <h2 className="text-3xl font-black text-white">{t.analyzing}</h2>
+    <div className="flex flex-col items-center justify-center py-16 md:py-24 min-h-[50vh] text-center animate-fade-in">
+      <div className="w-16 h-16 md:w-24 md:h-24 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-8"></div>
+      <h2 className="text-2xl md:text-3xl font-black text-white">{t.analyzing}</h2>
     </div>
   );
 };
@@ -78,7 +78,6 @@ const App: React.FC = () => {
 
   const executeSelection = async (selection: AppState, activeUser: User) => {
     setLoading(true);
-    // Personalize by passing the full user object to include favoriteGenres and preferredActors
     const result = await getMovieRecommendations(selection, language, activeUser);
     if (result) {
       setPack(result);
@@ -116,19 +115,26 @@ const App: React.FC = () => {
         onViewChange={setView}
       />
 
-      <div className={`flex-grow px-4 md:px-12 pb-24 lg:pb-12 ${language === 'fa' ? 'lg:pr-24' : 'lg:pl-24'}`}>
-        <header className="py-12 flex flex-col items-center">
-           <h1 onClick={() => { setView('home'); setPack(null); }} className="text-6xl md:text-8xl font-black text-red-600 tracking-tighter cursor-pointer hover:scale-105 transition-transform">{t.title}</h1>
-           <p className="text-slate-500 text-sm uppercase tracking-[0.5em] mt-4 font-bold opacity-70">{t.subtitle}</p>
+      <div className={`flex-grow px-4 md:px-12 pb-[100px] lg:pb-12 ${language === 'fa' ? 'lg:pr-32' : 'lg:pl-32'}`}>
+        <header className="py-8 md:py-16 flex flex-col items-center">
+           <h1 
+            onClick={() => { setView('home'); setPack(null); }} 
+            className="text-4xl sm:text-6xl md:text-8xl font-black text-red-600 tracking-tighter cursor-pointer hover:scale-105 transition-transform"
+           >
+             {t.title}
+           </h1>
+           <p className="text-slate-500 text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.3em] md:tracking-[0.5em] mt-2 md:mt-4 font-bold opacity-70">
+             {t.subtitle}
+           </p>
         </header>
 
-        <main className="max-w-7xl mx-auto">
+        <main className="max-w-7xl mx-auto w-full">
           {loading ? (
             <LoadingState language={language} />
           ) : view === 'auth' ? (
             <Auth 
               language={language} 
-              onAuthComplete={(u) => { setUser(u); setView('home'); syncHistory(u.id); }} 
+              onAuthComplete={(u) => { setUser(u); setView('home'); syncHistory(u.id); if(pendingSelection) executeSelection(pendingSelection, u); }} 
               onCancel={() => setView('home')} 
             />
           ) : view === 'history' ? (

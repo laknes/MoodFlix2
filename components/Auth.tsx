@@ -13,18 +13,25 @@ interface Props {
 interface ValidationErrors {
   email?: string;
   password?: string;
+  confirmPassword?: string;
   name?: string;
   age?: string;
 }
 
 const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
-  const [formData, setFormData] = useState({ email: '', password: '', name: '', age: '' });
+  const [formData, setFormData] = useState({ 
+    email: '', 
+    password: '', 
+    confirmPassword: '', 
+    name: '', 
+    age: '' 
+  });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [loading, setLoading] = useState(false);
   const [showAgeConfirmation, setShowAgeConfirmation] = useState(false);
   const [tempUser, setTempUser] = useState<User | null>(null);
-  const [passwordStrength, setPasswordStrength] = useState(0); // 0 to 3
+  const [passwordStrength, setPasswordStrength] = useState(0); 
   
   const t = translations[language];
 
@@ -32,8 +39,8 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
     if (!pass) return 0;
     let strength = 0;
     if (pass.length >= 6) strength = 1;
-    if (pass.length >= 10 && /[0-9]/.test(pass) && /[a-z]/i.test(pass)) strength = 2;
-    if (pass.length >= 12 && /[0-9]/.test(pass) && /[A-Z]/.test(pass) && /[^A-Za-z0-9]/.test(pass)) strength = 3;
+    if (pass.length >= 8 && /[0-9]/.test(pass) && /[a-z]/i.test(pass)) strength = 2;
+    if (pass.length >= 10 && /[0-9]/.test(pass) && /[A-Z]/.test(pass) && /[^A-Za-z0-9]/.test(pass)) strength = 3;
     return strength;
   };
 
@@ -42,6 +49,16 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
       setPasswordStrength(calculatePasswordStrength(formData.password));
     }
   }, [formData.password, mode]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Real-time error clearing
+    if (errors[name as keyof ValidationErrors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
 
   const validate = (): boolean => {
     const newErrors: ValidationErrors = {};
@@ -56,6 +73,9 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
 
     if (mode === 'signup') {
       if (!formData.name) newErrors.name = t.validation.nameRequired;
+      if (formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = t.validation.passwordMismatch;
+      }
       if (!formData.age) {
         newErrors.age = t.validation.ageRequired;
       } else {
@@ -80,7 +100,12 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
         const user = await loginUser({ email: formData.email, password: formData.password });
         onAuthComplete(user);
       } else {
-        const user = await registerUser(formData);
+        const user = await registerUser({
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          age: formData.age
+        });
         setTempUser(user);
         setShowAgeConfirmation(true);
       }
@@ -156,20 +181,22 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
               <div className="space-y-1">
                 <input
                   type="text"
+                  name="name"
                   placeholder={t.fullName}
-                  className={`w-full bg-white/5 border ${errors.name ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
+                  className={`w-full bg-white/5 border ${errors.name ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
                   value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
+                  onChange={handleInputChange}
                 />
                 {errors.name && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.name}</p>}
               </div>
               <div className="relative group space-y-1">
                 <input
                   type="number"
+                  name="age"
                   placeholder={t.age}
-                  className={`w-full bg-white/5 border ${errors.age ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
+                  className={`w-full bg-white/5 border ${errors.age ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
                   value={formData.age}
-                  onChange={e => setFormData({ ...formData, age: e.target.value })}
+                  onChange={handleInputChange}
                   min="1"
                   max="120"
                 />
@@ -186,10 +213,11 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
           <div className="space-y-1">
             <input
               type="email"
+              name="email"
               placeholder={t.email}
-              className={`w-full bg-white/5 border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
+              className={`w-full bg-white/5 border ${errors.email ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
               value={formData.email}
-              onChange={e => setFormData({ ...formData, email: e.target.value })}
+              onChange={handleInputChange}
             />
             {errors.email && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.email}</p>}
           </div>
@@ -197,10 +225,11 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
           <div className="space-y-1">
             <input
               type="password"
+              name="password"
               placeholder={t.password}
-              className={`w-full bg-white/5 border ${errors.password ? 'border-red-500' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
+              className={`w-full bg-white/5 border ${errors.password ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
               value={formData.password}
-              onChange={e => setFormData({ ...formData, password: e.target.value })}
+              onChange={handleInputChange}
             />
             {errors.password && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.password}</p>}
             
@@ -220,6 +249,20 @@ const Auth: React.FC<Props> = ({ language, onAuthComplete, onCancel }) => {
               </div>
             )}
           </div>
+
+          {mode === 'signup' && (
+            <div className="space-y-1">
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder={t.confirmPassword}
+                className={`w-full bg-white/5 border ${errors.confirmPassword ? 'border-red-500 animate-pulse' : 'border-white/10'} rounded-xl px-6 py-4 focus:border-red-600 outline-none transition-all font-bold`}
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+              />
+              {errors.confirmPassword && <p className="text-red-500 text-[10px] px-2 font-bold">{errors.confirmPassword}</p>}
+            </div>
+          )}
 
           <button 
             type="submit" 
