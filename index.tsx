@@ -52,12 +52,18 @@ const App: React.FC = () => {
 
   // Initialization
   useEffect(() => {
-    const savedTheme = localStorage.getItem('moodflix_theme') as Theme || 'dark';
-    const savedLang = localStorage.getItem('moodflix_lang') as Language || 'fa';
+    const storedTheme = localStorage.getItem('moodflix_theme');
+    const storedLang = localStorage.getItem('moodflix_lang');
     const savedUser = localStorage.getItem('moodflix_user');
 
-    setTheme(savedTheme);
-    setLanguage(savedLang);
+    if (storedTheme === 'light' || storedTheme === 'dark') {
+      setTheme(storedTheme);
+    }
+    
+    if (storedLang === 'fa' || storedLang === 'en') {
+      setLanguage(storedLang);
+    }
+
     if (savedUser) {
       try {
         const parsedUser = JSON.parse(savedUser);
@@ -248,5 +254,5 @@ const App: React.FC = () => {
   );
 };
 
-const root = createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById('root')!);
 root.render(<App />);
