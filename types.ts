@@ -30,7 +30,16 @@ export interface User {
   favoriteGenres: string[];
   preferredActors: string[];
   isAdmin?: boolean;
-  status: 'active' | 'suspended'; // Added status control
+  status: 'active' | 'suspended';
+  lastActive?: string;
+}
+
+export interface LogEntry {
+  id: string;
+  timestamp: string;
+  level: 'info' | 'warning' | 'error' | 'security';
+  message: string;
+  user?: string;
 }
 
 export interface MovieRecommendation {
@@ -84,10 +93,10 @@ export interface SystemSettings {
   activeModel: 'gemini-3-flash-preview' | 'gemini-3-pro-preview';
   customSystemPrompt: string;
   allowGuestMode: boolean;
-  // New AI Customization Parameters
   temperature: number;
   topP: number;
   topK: number;
+  logs: LogEntry[];
 }
 
 export interface ApiKeyConfig {
