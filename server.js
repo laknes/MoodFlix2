@@ -86,7 +86,7 @@ const server = http.createServer(async (req, res) => {
   if (urlPath.startsWith('/api/')) {
     res.setHeader('Content-Type', 'application/json');
 
-    // Register
+    // --- AUTH ROUTES ---
     if (urlPath === '/api/auth/register' && req.method === 'POST') {
       try {
         const { email, password, name, birthday } = await getJSONBody(req);
@@ -118,7 +118,6 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
-    // Login
     if (urlPath === '/api/auth/login' && req.method === 'POST') {
       try {
         const { email, password } = await getJSONBody(req);
@@ -141,7 +140,7 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
-    // User Profile Update
+    // --- USER ROUTES ---
     if (urlPath === '/api/user/update' && req.method === 'POST') {
       try {
         const data = await getJSONBody(req);
@@ -164,7 +163,45 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
-    // Recommendations
+    // --- HISTORY ROUTES ---
+    if (urlPath === '/api/history') {
+      if (req.method === 'GET') {
+        const userId = parsedUrl.searchParams.get('userId');
+        if (!userId) {
+          res.writeHead(400);
+          return res.end(JSON.stringify({ error: 'userId is required' }));
+        }
+        const history = readDB(HISTORY_FILE);
+        const userHistory = history.filter(h => h.userId === userId);
+        res.writeHead(200);
+        return res.end(JSON.stringify(userHistory));
+      }
+
+      if (req.method === 'POST') {
+        try {
+          const entry = await getJSONBody(req);
+          if (!entry.userId) {
+            res.writeHead(400);
+            return res.end(JSON.stringify({ error: 'userId is required for history entries' }));
+          }
+          const history = readDB(HISTORY_FILE);
+          const newEntry = {
+            ...entry,
+            id: Date.now().toString(),
+            timestamp: new Date().toISOString()
+          };
+          history.push(newEntry);
+          writeDB(HISTORY_FILE, history);
+          res.writeHead(201);
+          return res.end(JSON.stringify(newEntry));
+        } catch (e) {
+          res.writeHead(500);
+          return res.end(JSON.stringify({ error: 'Failed to save history' }));
+        }
+      }
+    }
+
+    // --- RECOMMENDATIONS ROUTE ---
     if (urlPath === '/api/recommendations' && req.method === 'POST') {
       try {
         const state = await getJSONBody(req);
@@ -254,17 +291,15 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // Final check - if file still doesn't exist, it's likely a SPA route, serve index.html
+  if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+    filePath = path.join(__dirname, 'index.html');
+  }
+
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      fs.readFile(path.join(__dirname, 'index.html'), (err2, indexData) => {
-        if (err2) {
-          res.writeHead(404);
-          res.end('404 Not Found');
-        } else {
-          res.writeHead(200, { 'Content-Type': 'text/html' });
-          res.end(indexData);
-        }
-      });
+      res.writeHead(404);
+      res.end('404 Not Found');
     } else {
       const ext = path.extname(filePath);
       res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] || 'text/plain' });
