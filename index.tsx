@@ -43,7 +43,7 @@ const LoadingState: React.FC<{ language: Language }> = ({ language }) => {
 const App: React.FC = () => {
   const [pack, setPack] = useState<MoodPack | null>(null);
   const [loading, setLoading] = useState(false);
-  const [history, setHistory] = useState<SavedMood[]>([]);
+  const [history, setHistory] = useState<Array<SavedMood>>([]);
   const [theme, setTheme] = useState<Theme>('dark');
   const [language, setLanguage] = useState<Language>('fa');
   const [view, setView] = useState<'home' | 'history' | 'settings' | 'profile' | 'admin' | 'auth'>('home');
