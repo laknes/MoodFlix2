@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { PrimaryMood, RecommendationType } from './types';
 
+// Fix: PrimaryMood is now correctly recognized as a type because it is an enum in types.ts
 export const MOOD_COLORS: Record<PrimaryMood, string> = {
   [PrimaryMood.SAD]: '#3B82F6',
   [PrimaryMood.HAPPY]: '#F59E0B',
@@ -30,6 +32,7 @@ const MinimalIcon = ({ children }: { children: React.ReactNode }) => (
   </svg>
 );
 
+// Fix: PrimaryMood is now correctly recognized as a type because it is an enum in types.ts
 export const MOOD_ICONS: Record<PrimaryMood, React.ReactNode> = {
   [PrimaryMood.SAD]: <MinimalIcon><path d="M7 10h.01M17 10h.01M12 18c-2 0-3-1-3-1m6 1s-1-1-3-1"/></MinimalIcon>,
   [PrimaryMood.HAPPY]: <MinimalIcon><path d="M7 10h.01M17 10h.01M8 15s1.5 2 4 2 4-2 4-2"/></MinimalIcon>,
@@ -53,6 +56,7 @@ export const MOOD_ICONS: Record<PrimaryMood, React.ReactNode> = {
   [PrimaryMood.STRESSED]: <MinimalIcon><path d="M12 8v4M12 16h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></MinimalIcon>
 };
 
+// Fix: RecommendationType is now correctly recognized as a type because it is an enum in types.ts
 export const REC_TYPE_ICONS: Record<RecommendationType, React.ReactNode> = {
   [RecommendationType.QUICK]: (
     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

@@ -5,7 +5,7 @@ const INTENSITY_SCORES: Record<IntensityLevel, number> = { low: 1, medium: 2, hi
 const ENERGY_SCORES: Record<string, number> = { very_low: 1, low: 2, medium: 3, high: 4 };
 const DEPTH_SCORES: Record<MentalDepth, number> = { light: 1, medium: 2, deep: 3 };
 
-// Fix: Complete the ADJACENT_MOODS mapping to include all PrimaryMood enum values
+// Fix: Now correctly using PrimaryMood as a type
 const ADJACENT_MOODS: Record<PrimaryMood, PrimaryMood[]> = {
   [PrimaryMood.SAD]: [PrimaryMood.LONELY, PrimaryMood.EMPTY, PrimaryMood.NOSTALGIC, PrimaryMood.GLOOMY],
   [PrimaryMood.LONELY]: [PrimaryMood.SAD, PrimaryMood.EMPTY, PrimaryMood.ROMANTIC],

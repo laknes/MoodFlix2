@@ -1,56 +1,21 @@
+
+// Types for Moodflix application
+
 export enum PrimaryMood {
-  SAD = 'sad',
-  CALM = 'calm',
-  LONELY = 'lonely',
-  ANXIOUS = 'anxious',
-  HAPPY = 'happy',
-  ANGRY = 'angry',
-  EMPTY = 'empty',
-  HOPEFUL = 'hopeful',
-  ROMANTIC = 'romantic',
-  BORED = 'bored',
-  TIRED = 'tired',
-  NIHILISTIC = 'nihilistic',
-  NOSTALGIC = 'nostalgic',
-  INSPIRED = 'inspired',
-  DREAMY = 'dreamy',
-  EXCITED = 'excited',
-  TENSE = 'tense',
-  PLAYFUL = 'playful',
-  GLOOMY = 'gloomy',
-  STRESSED = 'stressed'
+  SAD = 'sad', CALM = 'calm', LONELY = 'lonely', ANXIOUS = 'anxious',
+  HAPPY = 'happy', ANGRY = 'angry', EMPTY = 'empty', HOPEFUL = 'hopeful',
+  ROMANTIC = 'romantic', BORED = 'bored', TIRED = 'tired', NIHILISTIC = 'nihilistic',
+  NOSTALGIC = 'nostalgic', INSPIRED = 'inspired', DREAMY = 'dreamy', EXCITED = 'excited',
+  TENSE = 'tense', PLAYFUL = 'playful', GLOOMY = 'gloomy', STRESSED = 'stressed'
 }
 
-export enum RecommendationType {
-  QUICK = 'quick',
-  TRIPLE = 'triple',
-  PACK = 'pack',
-  THERAPY = 'therapy'
-}
-
-export enum Intensity {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high'
-}
-
-export enum EnergyLevel {
-  VERY_LOW = 'very_low',
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high'
-}
-
-export enum MentalState {
-  LIGHT = 'light',
-  MEDIUM = 'medium',
-  FUN = 'fun',
-  DEEP = 'deep'
-}
+export enum RecommendationType { QUICK = 'quick', TRIPLE = 'triple', PACK = 'pack', THERAPY = 'therapy' }
+export enum Intensity { LOW = 'low', MEDIUM = 'medium', HIGH = 'high' }
+export enum EnergyLevel { VERY_LOW = 'very_low', LOW = 'low', MEDIUM = 'medium', HIGH = 'high' }
+export enum MentalState { LIGHT = 'light', MEDIUM = 'medium', FUN = 'fun', DEEP = 'deep' }
 
 export type IntensityLevel = 'low' | 'medium' | 'high';
 export type MentalDepth = 'light' | 'medium' | 'deep';
-export type EmotionalEffect = 'calming' | 'releasing' | 'motivating' | 'reflective';
 export type Theme = 'dark' | 'light';
 export type Language = 'fa' | 'en';
 export type ContentRating = 'G' | 'PG' | 'PG-13' | 'R';
@@ -64,28 +29,7 @@ export interface User {
   joinedAt: string;
   favoriteGenres: string[];
   preferredActors: string[];
-  favoriteMovies?: MovieRecommendation[];
   isAdmin?: boolean;
-}
-
-export interface Movie {
-  id: string;
-  imdb_id: string;
-  title: string;
-  year: string;
-  imdb_score: number;
-  mood_tags: PrimaryMood[];
-  intensity: IntensityLevel;
-  energy_level: 'very_low' | 'low' | 'medium' | 'high';
-  mental_depth: MentalDepth;
-  emotional_effect: EmotionalEffect;
-  is_series: boolean;
-  is_violent: boolean;
-  is_extremely_sad: boolean;
-  description_en: string;
-  genres: string[];
-  actors?: string[];
-  content_rating: ContentRating;
 }
 
 export interface MovieRecommendation {
@@ -107,7 +51,7 @@ export interface MovieRecommendation {
 export interface MoodPack {
   name: string;
   iconType: string;
-  primaryMood: PrimaryMood; 
+  primaryMood: PrimaryMood;
   emotionalQuote: string;
   suggestedMusic: string;
   spotifyLink: string;
@@ -116,10 +60,13 @@ export interface MoodPack {
 }
 
 export interface SavedMood {
+  id?: string;
+  userId: string;
   date: string;
   mood: string;
   intensity: string;
   movieTitle: string;
+  timestamp?: string;
 }
 
 export interface AppState {
@@ -131,18 +78,38 @@ export interface AppState {
   avoidance: string[];
 }
 
+export interface SystemSettings {
+  maintenanceMode: boolean;
+  activeModel: string;
+  customSystemPrompt: string;
+  allowGuestMode: boolean;
+}
+
 export interface ApiKeyConfig {
   id: string;
   name: string;
   key: string;
   isActive: boolean;
-  provider: 'gemini' | 'openai' | 'other';
+  provider: string;
   usageCount: number;
 }
 
-export interface SystemSettings {
-  maintenanceMode: boolean;
-  activeModel: 'gemini-3-flash-preview' | 'gemini-3-pro-preview';
-  customSystemPrompt: string;
-  allowGuestMode: boolean;
+export interface Movie {
+  id: string;
+  imdb_id: string;
+  title: string;
+  year: string;
+  imdb_score: number;
+  mood_tags: PrimaryMood[];
+  intensity: IntensityLevel;
+  energy_level: string;
+  mental_depth: MentalDepth;
+  emotional_effect: string;
+  is_series: boolean;
+  is_violent: boolean;
+  is_extremely_sad: boolean;
+  description_en: string;
+  genres: string[];
+  actors: string[];
+  content_rating: ContentRating;
 }

@@ -26,3 +26,16 @@ export const loginUser = async (credentials: any): Promise<User> => {
   }
   return response.json();
 };
+
+export const updateUserProfile = async (userData: Partial<User>): Promise<User> => {
+  const response = await fetch('/api/user/update', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Update failed');
+  }
+  return response.json();
+};

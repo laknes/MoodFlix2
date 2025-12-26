@@ -64,7 +64,6 @@ const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
   const urlPath = parsedUrl.pathname;
 
-  // Set default CORS headers for development/environment flexibility
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -75,11 +74,10 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // API ROUTES
   if (urlPath.startsWith('/api/')) {
     res.setHeader('Content-Type', 'application/json');
 
-    // Auth: Register
+    // Register
     if (urlPath === '/api/auth/register' && req.method === 'POST') {
       try {
         const { email, password, name, age } = await getJSONBody(req);
@@ -95,6 +93,8 @@ const server = http.createServer(async (req, res) => {
           name, 
           age: parseInt(age) || 18, 
           joinedAt: new Date().toISOString(),
+          favoriteGenres: [],
+          preferredActors: [],
           isAdmin: email === 'admin@moodflix.com'
         };
         users.push(newUser);
@@ -108,7 +108,7 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
-    // Auth: Login
+    // Login
     if (urlPath === '/api/auth/login' && req.method === 'POST') {
       try {
         const { email, password } = await getJSONBody(req);
@@ -124,6 +124,30 @@ const server = http.createServer(async (req, res) => {
       } catch (e) {
         res.writeHead(500);
         return res.end(JSON.stringify({ error: 'Internal Server Error' }));
+      }
+    }
+
+    // User Profile Update
+    if (urlPath === '/api/user/update' && req.method === 'POST') {
+      try {
+        const data = await getJSONBody(req);
+        const users = readDB(USERS_FILE);
+        const userIdx = users.findIndex(u => u.id === data.id);
+        if (userIdx === -1) {
+          res.writeHead(404);
+          return res.end(JSON.stringify({ error: 'User not found' }));
+        }
+        
+        // Merge updates
+        users[userIdx] = { ...users[userIdx], ...data };
+        writeDB(USERS_FILE, users);
+        
+        const { password: _, ...safeUser } = users[userIdx];
+        res.writeHead(200);
+        return res.end(JSON.stringify(safeUser));
+      } catch (e) {
+        res.writeHead(500);
+        return res.end(JSON.stringify({ error: 'Failed to update user' }));
       }
     }
 
@@ -161,6 +185,10 @@ const server = http.createServer(async (req, res) => {
         const state = await getJSONBody(req);
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         
+        const userContext = state.userContext || {};
+        const favGenres = userContext.favoriteGenres?.length ? `Favorite Genres: ${userContext.favoriteGenres.join(', ')}` : '';
+        const prefActors = userContext.preferredActors?.length ? `Preferred Actors: ${userContext.preferredActors.join(', ')}` : '';
+
         const prompt = `
           Context: Mood-based movie recommendation platform.
           User Mood: ${state.primaryMood}
@@ -168,8 +196,15 @@ const server = http.createServer(async (req, res) => {
           Energy Level: ${state.energy}
           Focus: ${state.mentalState}
           Language: ${state.language === 'fa' ? 'Persian/Farsi' : 'English'}
+          
+          User Personalization Data:
+          - Age: ${userContext.age || 'Unknown'}
+          - ${favGenres}
+          - ${prefActors}
 
-          Task: Suggest 2-3 movies. 
+          Task: Suggest 2-3 movies tailored for the user's mood layers AND personalization data. 
+          Prioritize recommendations that match their favorite genres and preferred actors if they don't conflict with the current mood.
+          
           Return ONLY valid JSON in this format:
           {
             "quote": "A single emotional quote matching this vibe",
@@ -179,7 +214,7 @@ const server = http.createServer(async (req, res) => {
                 "title": "Movie Title",
                 "year": "2023",
                 "genre": "Drama/Sci-Fi",
-                "reason": "Explain why this fits the user's mood layers in ${state.language === 'fa' ? 'Farsi' : 'English'}",
+                "reason": "Explain why this fits the user's mood layers and personalization in ${state.language === 'fa' ? 'Farsi' : 'English'}",
                 "rating": "8.5",
                 "category": "SAFE or CHALLENGING or DEEP",
                 "imdb_id": "tt1234567"
@@ -207,7 +242,6 @@ const server = http.createServer(async (req, res) => {
 
   // STATIC ASSETS
   let filePath = path.join(__dirname, urlPath === '/' ? 'index.html' : urlPath);
-  
   if (!fs.existsSync(filePath)) {
     const possibleExts = ['.tsx', '.ts', '.js', '.jsx'];
     for (const ext of possibleExts) {
@@ -220,7 +254,6 @@ const server = http.createServer(async (req, res) => {
 
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      // SPA Fallback
       fs.readFile(path.join(__dirname, 'index.html'), (err2, indexData) => {
         if (err2) {
           res.writeHead(404);

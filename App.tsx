@@ -6,7 +6,8 @@ import MoodHistory from './components/MoodHistory';
 import Sidebar from './components/Sidebar';
 import Auth from './components/Auth';
 import AdminPanel from './components/AdminPanel';
-import { AppState, MoodPack, SavedMood, Theme, Language, User, SystemSettings, ApiKeyConfig } from './types';
+import Profile from './components/Profile';
+import { AppState, MoodPack, SavedMood, Theme, Language, User, SystemSettings } from './types';
 import { getMovieRecommendations } from './services/geminiService';
 import { translations } from './translations';
 import { loginUser, registerUser } from './services/authService';
@@ -40,9 +41,13 @@ const App: React.FC = () => {
     setTheme(savedTheme);
     setLanguage(savedLang);
     if (savedUser) {
-      const parsedUser = JSON.parse(savedUser);
-      setUser(parsedUser);
-      syncHistory(parsedUser.id);
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        setUser(parsedUser);
+        syncHistory(parsedUser.id);
+      } catch (e) {
+        localStorage.removeItem('user');
+      }
     }
   }, []);
 
@@ -62,30 +67,6 @@ const App: React.FC = () => {
     }
   };
 
-  const handleAuth = async (mode: 'login' | 'signup', data: any) => {
-    try {
-      setLoading(true);
-      const authenticatedUser = mode === 'login' 
-        ? await loginUser(data) 
-        : await registerUser(data);
-      
-      setUser(authenticatedUser);
-      localStorage.setItem('user', JSON.stringify(authenticatedUser));
-      await syncHistory(authenticatedUser.id);
-      
-      if (pendingSelection) {
-        executeSelection(pendingSelection, authenticatedUser);
-        setPendingSelection(null);
-      } else {
-        setView('home');
-      }
-    } catch (e: any) {
-      alert(e.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSelection = async (selection: AppState) => {
     if (!user) {
       setPendingSelection(selection);
@@ -97,6 +78,7 @@ const App: React.FC = () => {
 
   const executeSelection = async (selection: AppState, activeUser: User) => {
     setLoading(true);
+    // Personalize by passing the full user object to include favoriteGenres and preferredActors
     const result = await getMovieRecommendations(selection, language, activeUser);
     if (result) {
       setPack(result);
@@ -113,6 +95,11 @@ const App: React.FC = () => {
       }
     }
     setLoading(false);
+  };
+
+  const handleProfileUpdate = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
   const t = translations[language];
@@ -141,11 +128,17 @@ const App: React.FC = () => {
           ) : view === 'auth' ? (
             <Auth 
               language={language} 
-              onAuthComplete={(u) => { setUser(u); setView('home'); }} 
+              onAuthComplete={(u) => { setUser(u); setView('home'); syncHistory(u.id); }} 
               onCancel={() => setView('home')} 
             />
           ) : view === 'history' ? (
             <MoodHistory history={history} language={language} />
+          ) : view === 'profile' && user ? (
+            <Profile 
+              user={user} 
+              language={language} 
+              onUpdate={handleProfileUpdate} 
+            />
           ) : pack ? (
             <RecommendationDisplay 
               pack={pack} 

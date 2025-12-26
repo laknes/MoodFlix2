@@ -5,7 +5,6 @@ import { AppState, MoodPack, Language, User, SystemSettings } from "../types";
  * Communicates with the hardened backend API to get recommendations.
  * This keeps the API key secure and allows for server-side processing.
  */
-// Fix: Added optional apiKey and settings parameters to match the call site in App.tsx
 export const getMovieRecommendations = async (
   state: AppState, 
   language: Language, 
@@ -22,9 +21,14 @@ export const getMovieRecommendations = async (
       body: JSON.stringify({
         ...state,
         language,
-        userContext: user ? { age: user.age, name: user.name } : null,
-        apiKey, // Forwarding the custom API key if provided
-        settings // Forwarding system settings if provided
+        userContext: user ? { 
+          age: user.age, 
+          name: user.name,
+          favoriteGenres: user.favoriteGenres,
+          preferredActors: user.preferredActors
+        } : null,
+        apiKey,
+        settings
       }),
     });
 
@@ -34,7 +38,6 @@ export const getMovieRecommendations = async (
 
     const data = await response.json();
 
-    // Mapping backend response to our MoodPack interface
     return {
       name: data.packTitle || "Mood Pack",
       iconType: state.primaryMood ? 'heart' : 'sparkles',
