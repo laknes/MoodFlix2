@@ -24,12 +24,13 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  birthday: string; // Changed from age: number
+  birthday: string;
   avatar?: string;
   joinedAt: string;
   favoriteGenres: string[];
   preferredActors: string[];
   isAdmin?: boolean;
+  status: 'active' | 'suspended'; // Added status control
 }
 
 export interface MovieRecommendation {
@@ -83,6 +84,10 @@ export interface SystemSettings {
   activeModel: 'gemini-3-flash-preview' | 'gemini-3-pro-preview';
   customSystemPrompt: string;
   allowGuestMode: boolean;
+  // New AI Customization Parameters
+  temperature: number;
+  topP: number;
+  topK: number;
 }
 
 export interface ApiKeyConfig {

@@ -75,12 +75,20 @@ export const translations = {
       status: "وضعیت سیستم",
       userControl: "مدیریت کاربران",
       apiControl: "تنظیمات هوش مصنوعی",
+      apiKeysTab: "کلیدهای API",
       totalUsers: "کل کاربران",
       activeModel: "مدل فعال Gemini",
       keys: "کلیدهای API",
       systemPrompt: "دستورالعمل سیستم",
       promote: "ارتقا به ادمین",
-      revoke: "سلب دسترسی ادمین"
+      revoke: "سلب دسترسی ادمین",
+      addKey: "افزودن کلید جدید",
+      keyName: "نام کلید",
+      keyValue: "مقدار کلید",
+      provider: "سرویس‌دهنده",
+      activeStatus: "وضعیت فعال",
+      deleteKey: "حذف کلید",
+      usage: "میزان استفاده"
     },
     validation: {
       emailInvalid: "ایمیل معتبر نیست",
@@ -226,12 +234,20 @@ export const translations = {
       status: "System Status",
       userControl: "User Control",
       apiControl: "AI & API Settings",
+      apiKeysTab: "API Keys",
       totalUsers: "Total Users",
       activeModel: "Active Gemini Model",
       keys: "API Keys",
       systemPrompt: "System Instruction",
       promote: "Promote to Admin",
-      revoke: "Revoke Admin"
+      revoke: "Revoke Admin",
+      addKey: "Add New Key",
+      keyName: "Key Name",
+      keyValue: "Key Value",
+      provider: "Provider",
+      activeStatus: "Active Status",
+      deleteKey: "Delete Key",
+      usage: "Usage"
     },
     validation: {
       emailInvalid: "Invalid email address",

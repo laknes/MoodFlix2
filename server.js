@@ -104,7 +104,8 @@ const server = http.createServer(async (req, res) => {
           joinedAt: new Date().toISOString(),
           favoriteGenres: [],
           preferredActors: [],
-          isAdmin: email === 'admin@moodflix.com'
+          isAdmin: email === 'admin@moodflix.com',
+          status: 'active'
         };
         users.push(newUser);
         writeDB(USERS_FILE, users);
@@ -126,6 +127,10 @@ const server = http.createServer(async (req, res) => {
         if (!user) {
           res.writeHead(401);
           return res.end(JSON.stringify({ error: 'ایمیل یا رمز عبور اشتباه است.' }));
+        }
+        if (user.status === 'suspended') {
+          res.writeHead(403);
+          return res.end(JSON.stringify({ error: 'این حساب کاربری تعلیق شده است.' }));
         }
         const { password: _, ...safeUser } = user;
         res.writeHead(200);
@@ -164,10 +169,15 @@ const server = http.createServer(async (req, res) => {
       try {
         const state = await getJSONBody(req);
         
-        // Admin overrides if provided from client settings
+        // Admin overrides
         const activeModel = state.settings?.activeModel || 'gemini-3-flash-preview';
         const apiKey = state.apiKey || process.env.API_KEY;
         const systemInstructionOverride = state.settings?.customSystemPrompt;
+        
+        // AI Parameter Tuning
+        const temperature = state.settings?.temperature ?? 1.0;
+        const topP = state.settings?.topP ?? 0.95;
+        const topK = state.settings?.topK ?? 64;
 
         const ai = new GoogleGenAI({ apiKey });
         
@@ -213,7 +223,12 @@ const server = http.createServer(async (req, res) => {
         const response = await ai.models.generateContent({
           model: activeModel,
           contents: [{ parts: [{ text: prompt }] }],
-          config: { responseMimeType: 'application/json' }
+          config: { 
+            responseMimeType: 'application/json',
+            temperature,
+            topP,
+            topK
+          }
         });
 
         res.writeHead(200);
