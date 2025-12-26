@@ -9,8 +9,8 @@ interface Props {
   user: User | null;
   onThemeToggle: () => void;
   onLangToggle: (lang: Language) => void;
-  activeView: 'home' | 'history' | 'settings' | 'profile' | 'admin' | 'auth';
-  onViewChange: (view: 'home' | 'history' | 'settings' | 'profile' | 'admin' | 'auth') => void;
+  activeView: 'home' | 'history' | 'settings' | 'profile' | 'admin' | 'auth' | 'about';
+  onViewChange: (view: 'home' | 'history' | 'settings' | 'profile' | 'admin' | 'auth' | 'about') => void;
 }
 
 const Sidebar: React.FC<Props> = ({ theme, language, user, onThemeToggle, onLangToggle, activeView, onViewChange }) => {
@@ -39,6 +39,7 @@ const Sidebar: React.FC<Props> = ({ theme, language, user, onThemeToggle, onLang
   const ProfileIcon = <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>;
   const SettingsIcon = <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
   const AdminIcon = <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>;
+  const AboutIcon = <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 
   const MoonIcon = <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>;
   const SunIcon = <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>;
@@ -50,7 +51,7 @@ const Sidebar: React.FC<Props> = ({ theme, language, user, onThemeToggle, onLang
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-3xl border-t border-white/5 z-[150] flex items-center justify-around px-2 py-2 safe-area-inset-bottom h-[72px]">
         <NavItem mobile id="home" label={t.home} icon={HomeIcon} />
         <NavItem mobile id="history" label={t.history} icon={HistoryIcon} />
-        {user?.isAdmin && <NavItem mobile id="admin" label={t.admin} icon={AdminIcon} />}
+        <NavItem mobile id="about" label={t.about} icon={AboutIcon} />
         <NavItem mobile id="profile" label={t.profile} icon={ProfileIcon} />
       </div>
 
@@ -71,6 +72,7 @@ const Sidebar: React.FC<Props> = ({ theme, language, user, onThemeToggle, onLang
         <nav className="flex-grow px-4 space-y-2">
           <NavItem id="home" label={t.home} icon={HomeIcon} />
           <NavItem id="history" label={t.history} icon={HistoryIcon} />
+          <NavItem id="about" label={t.about} icon={AboutIcon} />
           <NavItem id="profile" label={t.profile} icon={ProfileIcon} />
           {user?.isAdmin && <NavItem id="admin" label={t.admin} icon={AdminIcon} />}
           <NavItem id="settings" label={t.settings} icon={SettingsIcon} />

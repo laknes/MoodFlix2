@@ -7,6 +7,7 @@ import Sidebar from './components/Sidebar';
 import Auth from './components/Auth';
 import AdminPanel from './components/AdminPanel';
 import Profile from './components/Profile';
+import About from './components/About';
 import { AppState, MoodPack, SavedMood, Theme, Language, User, SystemSettings } from './types';
 import { getMovieRecommendations } from './services/geminiService';
 import { translations } from './translations';
@@ -29,7 +30,7 @@ const App: React.FC = () => {
   const [history, setHistory] = useState<SavedMood[]>([]);
   const [theme, setTheme] = useState<Theme>('dark');
   const [language, setLanguage] = useState<Language>('fa');
-  const [view, setView] = useState<'home' | 'history' | 'settings' | 'profile' | 'admin' | 'auth'>('home');
+  const [view, setView] = useState<'home' | 'history' | 'settings' | 'profile' | 'admin' | 'auth' | 'about'>('home');
   const [user, setUser] = useState<User | null>(null);
   const [pendingSelection, setPendingSelection] = useState<AppState | null>(null);
 
@@ -184,6 +185,8 @@ const App: React.FC = () => {
                 alert(language === 'fa' ? 'داده‌ها همگام‌سازی شد' : 'Data synchronized');
               }}
             />
+          ) : view === 'about' ? (
+            <About language={language} />
           ) : pack ? (
             <RecommendationDisplay 
               pack={pack} 

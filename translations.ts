@@ -8,6 +8,7 @@ export const translations = {
     settings: "تنظیمات",
     profile: "پروفایل",
     admin: "پنل مدیریت",
+    about: "درباره ما",
     login: "ورود",
     signup: "ثبت‌نام",
     logout: "خروج از حساب",
@@ -60,6 +61,14 @@ export const translations = {
     saveToFav: "ذخیره در آرشیو",
     removeFromFav: "حذف از آرشیو",
     aiInstruction: "شما یک متخصص تحلیل روانشناختی سینما هستید که بر اساس مود کاربر فیلم پیشنهاد می‌دهید.",
+    aboutPage: {
+      missionTitle: "مأموریت ما",
+      missionText: "مودفلیکس فراتر از یک موتور جستجوی فیلم است؛ ما پلی هستیم بین روان‌شناسی و سینما. هدف ما این است که با استفاده از قدرت هوش مصنوعی، فیلمی را پیدا کنیم که دقیقاً با فرکانس احساسی فعلی شما همخوانی داشته باشد.",
+      aiRoleTitle: "نقش هوش مصنوعی در سینمادرمانی",
+      aiRoleText: "هوش مصنوعی ما (Gemini) صرفاً به ژانرها نگاه نمی‌کند، بلکه لایه‌های پنهان یک اثر هنری شامل ریتم، عمق فلسفی و اتمسفر صوتی را تحلیل می‌کند تا تجربه‌ای درمانی و کاتارسیک برای شما رقم بزند.",
+      teamTitle: "تیم ما",
+      teamText: "ما گروهی از عاشقان سینما و متخصصان هوش مصنوعی هستیم که در آزمایشگاه هوش سینمایی (Cinematic Intelligence Lab) روی تعامل احساسی انسان و هنر کار می‌کنیم."
+    },
     adminDashboard: {
       title: "داشبورد مدیریت",
       syncData: "همگام‌سازی",
@@ -150,6 +159,7 @@ export const translations = {
     settings: "Settings",
     profile: "Profile",
     admin: "Admin Panel",
+    about: "About Us",
     login: "Login",
     signup: "Sign Up",
     logout: "Log Out",
@@ -202,6 +212,14 @@ export const translations = {
     saveToFav: "Save to Archive",
     removeFromFav: "Remove from Archive",
     aiInstruction: "You are an empathetic cinematic expert providing movie recommendations based on user mood and emotional depth.",
+    aboutPage: {
+      missionTitle: "Our Mission",
+      missionText: "Moodflix is more than just a movie search engine; we are the bridge between psychology and cinema. Our goal is to use the power of AI to find the film that resonates perfectly with your current emotional frequency.",
+      aiRoleTitle: "The AI in Movie Therapy",
+      aiRoleText: "Our AI (Gemini) doesn't just look at genres; it analyzes the hidden layers of an artwork, including rhythm, philosophical depth, and sonic atmosphere, to create a healing and cathartic experience for you.",
+      teamTitle: "Our Team",
+      teamText: "We are a collective of cinephiles and AI researchers at the Cinematic Intelligence Lab, exploring the emotional intersection of humans and art."
+    },
     adminDashboard: {
       title: "Admin Dashboard",
       syncData: "Sync Data",
