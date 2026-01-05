@@ -1,0 +1,3 @@
+/* Minimal global styles for Vite build */
+html,body,#root { height: 100%; }
+body { margin: 0; }

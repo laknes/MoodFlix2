@@ -1,0 +1,7 @@
+
+{
+  "appId": "com.moodflix.app",
+  "appName": "Moodflix",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

@@ -1,0 +1,29 @@
+
+{
+  "name": "moodflix",
+  "version": "1.0.0",
+  "description": "High Performance AI Movie Intelligence",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port $PORT",
+    "start": "vite preview --port $PORT",
+    "android-open": "npx cap open android"
+  },
+  "dependencies": {
+    "@google/genai": "^1.34.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/android": "^6.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "recharts": "^2.12.7"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
+    "vite": "^5.1.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "typescript": "^5.2.0"
+  }
+}
