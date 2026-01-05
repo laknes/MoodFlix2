@@ -15,12 +15,19 @@ module.exports = async (req, res) => {
   req.on('data', c => body += c);
   req.on('end', async () => {
     try {
-      const { email } = JSON.parse(body);
-      let user = await db.findUserByEmail(email);
-      if (!user) {
-        user = { id: Date.now().toString(), name: email.split('@')[0], email, isAdmin: email.includes('admin') };
-        await db.addUser(user);
+      const payload = JSON.parse(body);
+      const { email } = payload;
+      if (!email) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'Email is required' }));
       }
+      const existing = await db.findUserByEmail(email);
+      if (existing) {
+        res.statusCode = 409;
+        return res.end(JSON.stringify({ error: 'User already exists' }));
+      }
+      const user = { id: Date.now().toString(), name: payload.name || email.split('@')[0], email, isAdmin: !!payload.isAdmin };
+      await db.addUser(user);
       res.end(JSON.stringify(user));
     } catch (e) {
       res.statusCode = 400;

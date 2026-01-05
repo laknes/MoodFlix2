@@ -15,13 +15,18 @@ module.exports = async (req, res) => {
   req.on('data', c => body += c);
   req.on('end', async () => {
     try {
-      const { email } = JSON.parse(body);
-      let user = await db.findUserByEmail(email);
-      if (!user) {
-        user = { id: Date.now().toString(), name: email.split('@')[0], email, isAdmin: email.includes('admin') };
-        await db.addUser(user);
+      const payload = JSON.parse(body);
+      const { userId, isAdmin } = payload;
+      if (!userId) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'userId is required' }));
       }
-      res.end(JSON.stringify(user));
+      const updated = await db.setUserStatus(userId, { isAdmin });
+      if (!updated) {
+        res.statusCode = 404;
+        return res.end(JSON.stringify({ error: 'User not found' }));
+      }
+      res.end(JSON.stringify({ success: true, user: updated }));
     } catch (e) {
       res.statusCode = 400;
       res.end(JSON.stringify({ error: 'Invalid request body' }));

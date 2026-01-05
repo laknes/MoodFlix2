@@ -19,6 +19,10 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^2.12.7"
+    ,"pg": "^8.11.0"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.0.0",

@@ -1,6 +1,6 @@
-const { readDB, writeDB } = require('./_db');
+const db = require('./_db');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -11,17 +11,16 @@ module.exports = (req, res) => {
 
     if (req.method === 'GET') {
       const uid = url.searchParams.get('userId');
-      const history = readDB('history.json');
-      return res.end(JSON.stringify(history.filter(h => h.userId === uid)));
+      const history = await db.getHistory(uid);
+      return res.end(JSON.stringify(history));
     }
 
     if (req.method === 'POST') {
       let body = '';
       req.on('data', c => body += c);
-      req.on('end', () => {
-        const hist = readDB('history.json');
-        hist.push({ ...JSON.parse(body), id: Date.now().toString(), timestamp: new Date().toISOString() });
-        writeDB('history.json', hist);
+      req.on('end', async () => {
+        const entry = { ...JSON.parse(body), id: Date.now().toString(), userId: JSON.parse(body).userId, timestamp: new Date().toISOString() };
+        await db.addHistory(entry);
         res.end(JSON.stringify({ success: true }));
       });
       return;

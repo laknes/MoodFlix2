@@ -106,6 +106,17 @@ if [[ $CF_ENABLE == "y" ]]; then
 
     Notes:
      - The original `server.js` is a long-running server and is not used on Vercel as-is. For server-side API endpoints, convert routes into `/api` serverless functions. The repo currently prepares static hosting for the Vite-built frontend.
+
+    Database on Vercel
+     - This project supports Vercel Postgres via the `DATABASE_URL` environment variable. When `DATABASE_URL` is set, API functions will use Postgres; otherwise a local JSON file fallback under `db/` is used for development.
+     - Quick setup on Vercel:
+         1. From your Vercel dashboard, add a new "Postgres" database (Vercel Postgres) or use an external provider like Supabase or Railway.
+         2. Copy the `DATABASE_URL` connection string and add it to your Project Environment Variables in Vercel (`Settings -> Environment Variables`).
+         3. Deploy — serverless functions will initialize the required tables automatically.
+
+    Local dev without Postgres:
+     - The app will create a `db/` folder and persist `users.json`, `history.json`, and `settings.json` for local testing.
+
     cloudflared tunnel login
     
     TUNNEL_NAME="moodflix-$(date +%s)"
